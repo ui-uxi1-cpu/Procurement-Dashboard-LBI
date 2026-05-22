@@ -1,0 +1,2713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Littlebox — Procurement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #F5F4F1;
+  --surface: #FFFFFF;
+  --surface-2: #F0EFEC;
+  --surface-3: #E8E7E3;
+  --border-1: #C8C7C2;
+  --border-2: #E0DFD9;
+  --border-3: #EBEBEB;
+  --text-1: #1A1A18;
+  --text-2: #6B6A66;
+  --text-3: #A8A7A2;
+  --excess-bg: #FAEEDA; --excess-text: #633806; --excess-dot: #EF9F27;
+  --regular-bg: #E6F1FB; --regular-text: #0C447C; --regular-dot: #378ADD;
+  --mif-bg: #E1F5EE; --mif-text: #085041; --mif-dot: #1D9E75;
+  --new-bg: #F0EAFF; --new-text: #4A1D96; --new-dot: #7C3AED;
+  --approved-bg: #E8F7F2; --approved-text: #085041; --approved-border: #1D9E75;
+  --pending-bg: #EEF3FA; --pending-text: #0C447C; --pending-border: #378ADD;
+  --onhold-bg: #FAEEDA; --onhold-text: #633806; --onhold-border: #EF9F27;
+  --draft-bg: #F1EFE8; --draft-text: #444441;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; --radius-xl: 18px;
+  --font: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --sidebar-w: 220px;
+  --nav-h: 56px;
+  --shadow-modal: 0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body { font-family: var(--font); background: var(--bg); color: var(--text-1); min-height: 100vh; overflow-x: hidden; }
+
+/* ── Topnav ── */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+  background: var(--surface); border-bottom: 1px solid var(--border-3);
+  display: flex; align-items: center; padding: 0 20px; gap: 16px; z-index: 100;
+}
+.logo { font-size: 15px; font-weight: 700; color: var(--text-1); letter-spacing: -.02em; min-width: 120px; }
+.logo span { color: var(--text-3); font-weight: 400; }
+.nav-search {
+  flex: 1; max-width: 440px; position: relative;
+}
+.nav-search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 15px; color: var(--text-3); pointer-events: none; }
+.nav-search input {
+  width: 100%; padding: 7px 12px 7px 34px; border-radius: 20px;
+  border: 1px solid var(--border-2); background: var(--surface-2);
+  font-family: var(--font); font-size: 13px; color: var(--text-1); outline: none;
+}
+.nav-search input:focus { border-color: var(--border-1); }
+.nav-search input::placeholder { color: var(--text-3); }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.nav-icon-btn {
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-2);
+  background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--text-2); font-size: 16px; transition: background .15s;
+}
+.nav-icon-btn:hover { background: var(--surface-2); }
+.priority-chip {
+  display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500;
+  padding: 5px 10px; border-radius: 20px; background: var(--surface-2); color: var(--text-2);
+  border: 1px solid var(--border-2); cursor: pointer;
+}
+.priority-chip .x { font-size: 14px; color: var(--text-3); }
+
+/* ── Layout ── */
+.app-body { display: flex; padding-top: var(--nav-h); min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border-3);
+  position: fixed; top: var(--nav-h); bottom: 0; left: 0;
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.sidebar-nav { flex: 1; padding: 12px 0; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 16px;
+  font-size: 13px; color: var(--text-2); cursor: pointer; transition: all .15s;
+  border-radius: 0; text-decoration: none;
+}
+.nav-item i { font-size: 17px; flex-shrink: 0; }
+.nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+.nav-item.active { background: var(--surface-2); color: var(--text-1); font-weight: 500; }
+.nav-item.active i { color: var(--text-1); }
+.sidebar-bottom {
+  padding: 14px 16px; border-top: 1px solid var(--border-3);
+}
+.sidebar-bottom-label { font-size: 11px; color: var(--text-3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+.role-select {
+  width: 100%; padding: 7px 10px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-2); background: var(--surface-2);
+  font-family: var(--font); font-size: 13px; color: var(--text-1); cursor: pointer; outline: none;
+}
+
+/* ── Main content ── */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 24px; min-height: calc(100vh - var(--nav-h)); }
+
+/* ── Role toggle in header ── */
+.role-toggle { display: flex; background: var(--surface-2); border-radius: var(--radius-lg); padding: 3px; gap: 2px; border: 1px solid var(--border-2); }
+.role-toggle-btn {
+  font-size: 13px; font-weight: 500; padding: 7px 20px; border-radius: var(--radius-md);
+  border: none; background: transparent; color: var(--text-2); cursor: pointer;
+  transition: all .18s; font-family: var(--font);
+}
+.role-toggle-btn.active { background: var(--surface); color: var(--text-1); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.page-title { font-size: 22px; font-weight: 600; color: var(--text-1); letter-spacing: -.02em; line-height: 1.2; }
+.page-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+.header-chips { display: flex; gap: 8px; flex-shrink: 0; }
+.header-chip {
+  font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px;
+  border: 1px solid; cursor: default;
+}
+.chip-blue { background: var(--pending-bg); color: var(--pending-text); border-color: var(--pending-border); }
+.chip-amber { background: var(--onhold-bg); color: var(--onhold-text); border-color: var(--onhold-border); }
+
+/* ── Two col ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; align-items: start; }
+.two-col .card { height: 100%; }
+
+/* ── Card ── */
+.card {
+  background: var(--surface); border: 1px solid var(--border-3);
+  border-radius: var(--radius-xl); padding: 18px;
+}
+.card-label {
+  font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase;
+  letter-spacing: .08em; margin-bottom: 14px;
+}
+.section-divider { height: 1px; background: var(--border-3); margin: 14px 0; }
+
+/* ── Form elements ── */
+.field-group { margin-bottom: 12px; }
+.field-label { font-size: 12px; color: var(--text-2); margin-bottom: 5px; display: block; }
+.field-input {
+  width: 100%; padding: 8px 11px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-2); background: var(--surface-2);
+  font-family: var(--font); font-size: 13px; color: var(--text-1); outline: none; transition: border-color .15s;
+}
+.field-input:focus { border-color: var(--border-1); background: var(--surface); }
+.field-input::placeholder { color: var(--text-3); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+textarea.field-input { resize: none; height: 56px; line-height: 1.5; }
+
+/* ── URL + Image inputs ── */
+.link-input-wrap { position: relative; margin-bottom: 12px; }
+.link-input-wrap .link-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 15px; color: var(--text-3); pointer-events: none; z-index: 1;
+}
+.link-input-wrap input {
+  width: 100%; padding: 8px 80px 8px 32px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-2); background: var(--surface-2);
+  font-family: var(--font); font-size: 13px; color: var(--text-1); outline: none; transition: all .15s;
+}
+.link-input-wrap input:focus { border-color: var(--border-1); background: var(--surface); }
+.link-input-wrap input::placeholder { color: var(--text-3); }
+.link-input-wrap .link-hint {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase;
+  letter-spacing: .05em; pointer-events: none; background: var(--surface-2);
+  padding: 2px 5px; border-radius: 4px; border: 1px solid var(--border-2);
+}
+.link-input-wrap input:focus ~ .link-hint { background: var(--surface); }
+.link-input-wrap .link-step {
+  font-size: 11px; color: var(--text-3); margin-top: 4px; display: flex; align-items: center; gap: 5px;
+}
+.link-input-wrap .link-step i { font-size: 12px; }
+
+/* ── Pie chart ── */
+.pie-wrap { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+.pie-legend { flex: 1; }
+.legend-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-1); margin-bottom: 6px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.legend-pct { margin-left: auto; font-weight: 600; font-family: var(--font-mono); font-size: 12px; }
+
+/* ── Fabric sourcing ── */
+.fabric-name-dropdown { margin-bottom: 12px; }
+.status-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.status-pill {
+  font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 20px;
+  cursor: pointer; border: 1.5px solid transparent; transition: all .15s;
+  display: flex; align-items: center; gap: 5px; user-select: none;
+}
+.status-pill .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.sp-all { background: var(--surface-2); color: var(--text-2); border-color: var(--border-2); }
+.sp-all.active { background: var(--text-1); color: #fff; border-color: var(--text-1); }
+.sp-excess { background: var(--excess-bg); color: var(--excess-text); }
+.sp-excess.active { border-color: var(--excess-dot); }
+.sp-regular { background: var(--regular-bg); color: var(--regular-text); }
+.sp-regular.active { border-color: var(--regular-dot); }
+.sp-mif { background: var(--mif-bg); color: var(--mif-text); }
+.sp-mif.active { border-color: var(--mif-dot); }
+
+/* ── Swatch grid ── */
+.swatch-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; margin-bottom: 10px; }
+.swatch-item {
+  border-radius: var(--radius-md); overflow: hidden; cursor: pointer;
+  border: 2px solid transparent; transition: all .15s;
+}
+.swatch-item:hover { transform: scale(1.05); }
+.swatch-item.selected { border-color: var(--text-1); transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.swatch-item.sw-hidden { display: none; }
+.swatch-face { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.swatch-bar { height: 5px; }
+.swatch-name {
+  font-size: 10px; color: var(--text-2); text-align: center; padding: 4px 3px;
+  background: var(--surface); border-top: 1px solid var(--border-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+}
+
+/* ── Selected strip ── */
+.sel-strip {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+  border-radius: var(--radius-md); border: 1px solid var(--border-2);
+  background: var(--surface-2); min-height: 40px; margin-bottom: 10px;
+}
+.sel-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; border: 1px solid var(--border-2); }
+.sel-name { font-size: 13px; font-weight: 500; color: var(--text-1); }
+.sel-meta { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+.sel-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-left: auto; flex-shrink: 0; }
+
+/* ── Stock row ── */
+.stock-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.stock-cell { background: var(--surface-2); border-radius: var(--radius-md); padding: 9px 11px; }
+.stock-lbl { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.stock-val { font-size: 15px; font-weight: 600; color: var(--text-1); font-family: var(--font-mono); }
+
+/* ── Add fabric btn ── */
+.add-fabric-btn {
+  display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500;
+  padding: 8px 13px; border-radius: var(--radius-md);
+  border: 1.5px dashed var(--border-2); color: var(--text-2);
+  background: transparent; cursor: pointer; width: 100%; transition: all .15s;
+  font-family: var(--font);
+}
+.add-fabric-btn:hover { background: var(--surface-2); border-color: var(--border-1); color: var(--text-1); }
+
+/* ── CTA row ── */
+.cta-row { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 14px; }
+.btn-primary {
+  display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500;
+  padding: 9px 18px; border-radius: var(--radius-lg); background: var(--text-1);
+  color: #fff; border: none; cursor: pointer; font-family: var(--font); transition: opacity .15s;
+}
+.btn-primary:hover { opacity: .85; }
+.btn-secondary {
+  display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500;
+  padding: 9px 18px; border-radius: var(--radius-lg); background: var(--surface);
+  color: var(--text-2); border: 1px solid var(--border-2); cursor: pointer;
+  font-family: var(--font); transition: all .15s;
+}
+.btn-secondary:hover { background: var(--surface-2); color: var(--text-1); }
+
+/* ── Requests table card ── */
+.tabs-row { display: flex; border-bottom: 1px solid var(--border-3); margin-bottom: 16px; }
+.tab-btn {
+  font-size: 13px; padding: 8px 16px; border: none; background: transparent;
+  color: var(--text-2); cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all .15s; font-family: var(--font); font-weight: 400;
+}
+.tab-btn.active { color: var(--text-1); font-weight: 600; border-bottom-color: var(--text-1); }
+.draft-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface-2); border-radius: 20px; font-size: 11px;
+  padding: 1px 7px; margin-left: 5px; color: var(--text-2);
+}
+
+/* ── Filter bar ── */
+.filter-row-1 { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; flex-wrap: wrap; }
+.filter-row-2 { margin-bottom: 12px; }
+.filter-tab {
+  font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px;
+  border: 1px solid var(--border-2); background: var(--surface); color: var(--text-2);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.filter-tab.all.active { background: var(--text-1); color: #fff; border-color: var(--text-1); }
+.filter-tab.approved.active { background: var(--approved-bg); color: var(--approved-text); border-color: var(--approved-border); }
+.filter-tab.pending.active { background: var(--pending-bg); color: var(--pending-text); border-color: var(--pending-border); }
+.filter-tab.onhold.active { background: var(--onhold-bg); color: var(--onhold-text); border-color: var(--onhold-border); }
+.filter-tab.superimpose.active { background: var(--new-bg); color: var(--new-text); border-color: var(--new-dot); }
+.search-full { position: relative; }
+.search-full i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--text-3); pointer-events: none; }
+.search-full input {
+  width: 100%; padding: 7px 12px 7px 32px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-2); background: var(--surface-2);
+  font-family: var(--font); font-size: 12px; color: var(--text-1); outline: none;
+}
+.search-full input:focus { border-color: var(--border-1); background: var(--surface); }
+.search-full input::placeholder { color: var(--text-3); }
+
+/* ── Calendar ── */
+.cal-wrap { margin-left: auto; position: relative; }
+.cal-btn {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500;
+  padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border-2);
+  background: var(--surface); color: var(--text-2); cursor: pointer; white-space: nowrap;
+  height: 32px; transition: all .15s; font-family: var(--font);
+}
+.cal-btn:hover { border-color: var(--border-1); color: var(--text-1); }
+.cal-btn.active-filter { border-color: var(--text-1); color: var(--text-1); background: var(--surface); }
+.cal-chevron { font-size: 11px; transition: transform .15s; }
+.cal-popup {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 200;
+  background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: var(--radius-xl); padding: 14px; width: 268px; display: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+}
+.cal-popup.open { display: block; }
+.cal-view-tabs { display: flex; border: 1px solid var(--border-2); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 12px; }
+.cal-view-tab { flex: 1; font-size: 11px; font-weight: 500; padding: 6px 0; border: none; background: transparent; color: var(--text-2); cursor: pointer; transition: all .12s; text-align: center; font-family: var(--font); }
+.cal-view-tab.active { background: var(--text-1); color: #fff; }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cal-nav-btn { width: 26px; height: 26px; border-radius: var(--radius-sm); border: 1px solid var(--border-2); background: var(--surface-2); color: var(--text-2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; transition: background .12s; }
+.cal-nav-btn:hover { background: var(--surface-3); }
+.cal-heading { font-size: 13px; font-weight: 600; color: var(--text-1); cursor: pointer; padding: 3px 8px; border-radius: var(--radius-sm); flex: 1; text-align: center; transition: background .12s; }
+.cal-heading:hover { background: var(--surface-2); }
+.cal-grid-7 { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.cal-grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; }
+.cal-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; }
+.cal-day-lbl { font-size: 10px; font-weight: 600; color: var(--text-3); text-align: center; padding: 3px 0; text-transform: uppercase; }
+.cal-cell { font-size: 12px; padding: 5px 2px; border-radius: var(--radius-sm); border: 1px solid transparent; background: transparent; color: var(--text-2); cursor: pointer; text-align: center; transition: all .12s; width: 100%; font-family: var(--font); }
+.cal-cell:hover { background: var(--surface-2); color: var(--text-1); }
+.cal-cell.today { border-color: var(--border-1); color: var(--text-1); font-weight: 600; }
+.cal-cell.selected { background: var(--text-1); color: #fff; font-weight: 600; border-color: var(--text-1); }
+.cal-cell.other-m { color: var(--text-3); pointer-events: none; }
+.cal-footer { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-3); display: flex; align-items: center; justify-content: space-between; }
+.cal-clear { font-size: 11px; color: var(--text-3); cursor: pointer; border: none; background: none; padding: 0; font-family: var(--font); }
+.cal-clear:hover { color: var(--text-1); }
+.cal-status-lbl { font-size: 11px; color: var(--text-2); }
+
+/* ── Table ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+thead th { font-size: 11px; font-weight: 600; color: var(--text-3); text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border-3); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+tbody td { padding: 10px; border-bottom: 1px solid var(--border-3); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--surface-2); }
+tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
+.thumb {
+  width: 60px; height: 60px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border: 1px solid var(--border-3); font-size: 26px;
+  overflow: hidden; object-fit: cover;
+}
+.thumb-excess { background: #FFF8ED; }
+.thumb-regular { background: #EEF3FA; }
+.thumb-mif { background: #E8F7F2; }
+.sb { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; display: inline-block; }
+.s-approved { background: var(--approved-bg); color: var(--approved-text); }
+.s-pending { background: var(--pending-bg); color: var(--pending-text); }
+.s-onhold { background: var(--onhold-bg); color: var(--onhold-text); }
+.s-draft { background: var(--draft-bg); color: var(--draft-text); }
+.fab-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; display: inline-block; }
+.fb-excess { background: var(--excess-bg); color: var(--excess-text); }
+.fb-regular { background: var(--regular-bg); color: var(--regular-text); }
+.fb-mif { background: var(--mif-bg); color: var(--mif-text); }
+.fb-new { background: var(--new-bg); color: var(--new-text); }
+.bc-excess { background: var(--excess-bg); color: var(--excess-text); }
+.bc-regular { background: var(--regular-bg); color: var(--regular-text); }
+.bc-mif { background: var(--mif-bg); color: var(--mif-text); }
+.bc-new { background: var(--new-bg); color: var(--new-text); }
+.bar-excess { background: var(--excess-dot); }
+.bar-regular { background: var(--regular-dot); }
+.bar-mif { background: var(--mif-dot); }
+.bar-new { background: var(--new-dot); }
+.thumb-new { background: #EDE9FF; }
+.colour-id { display: inline-flex; align-items: center; gap: 6px; }
+.colour-id-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; border: 1px solid var(--border-2); }
+.colour-id-code { font-family: var(--font-mono); font-size: 11px; color: var(--text-2); }
+.remarks-btn {
+  display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500;
+  padding: 3px 8px; border-radius: 20px; background: var(--onhold-bg); color: var(--onhold-text);
+  border: none; cursor: pointer; font-family: var(--font);
+}
+.act-icon-btn {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-2); background: var(--surface);
+  color: var(--text-2); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; transition: all .15s; position: relative;
+}
+.act-icon-btn:hover .tip { opacity: 1; }
+.act-icon-btn.approve { color: #1D9E75; border-color: rgba(29,158,117,.3); background: rgba(29,158,117,.06); }
+.act-icon-btn.approve:hover { background: var(--approved-bg); color: var(--approved-text); border-color: var(--approved-border); }
+.act-icon-btn.hold { color: #D93025; border-color: rgba(217,48,37,.25); background: rgba(217,48,37,.05); }
+.act-icon-btn.hold:hover { background: #FDECEA; color: #D93025; border-color: rgba(217,48,37,.4); }
+.act-icon-btn.review:hover { background: var(--surface-2); color: var(--text-1); }
+.act-actions { display: flex; gap: 5px; }
+.tip {
+  position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%);
+  background: var(--text-1); color: #fff; font-size: 10px; padding: 3px 7px; border-radius: 5px;
+  white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .12s;
+  z-index: 50; font-family: var(--font);
+}
+
+/* ── Pagination ── */
+.pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.pag-left { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); }
+.per-page-sel { padding: 4px 7px; border-radius: var(--radius-sm); border: 1px solid var(--border-2); background: var(--surface-2); font-family: var(--font); font-size: 12px; color: var(--text-2); cursor: pointer; }
+.result-count { color: var(--text-3); font-size: 12px; }
+.page-btns { display: flex; gap: 5px; }
+.page-btn {
+  width: 28px; height: 28px; border-radius: var(--radius-sm); border: 1px solid var(--border-2);
+  background: var(--surface); color: var(--text-2); cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; justify-content: center; font-family: var(--font); transition: all .15s;
+}
+.page-btn.active { background: var(--text-1); color: #fff; border-color: var(--text-1); }
+.page-btn:hover:not(.active) { background: var(--surface-2); }
+
+/* ── Superimpose badge ── */
+.si-badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+.si-yes { background:#E6F1FB; color:#0C447C; }
+.si-no  { background:#F2F2F0; color:#6B6B67; }
+#req-tbody td {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-1);
+  vertical-align: middle;
+}
+#req-tbody td:nth-child(2) { font-weight: 500; }   /* Product name — slightly bolder */
+#req-tbody td:nth-child(3) { color: var(--text-2); } /* Collection — secondary */
+
+/* ── Admin table overrides ── */
+#panel-admin .tbl-wrap table {
+  table-layout: auto;
+  width: 100%;
+}
+#panel-admin thead th {
+  padding: 8px 14px;
+  font-size: 10px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+#panel-admin tbody td {
+  padding: 12px 14px;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-1);
+}
+/* Image col */
+#panel-admin table th:nth-child(1),
+#panel-admin table td:nth-child(1) { width: 68px; min-width: 68px; padding-left: 14px; }
+/* Product col */
+#panel-admin table th:nth-child(2),
+#panel-admin table td:nth-child(2) { min-width: 140px; font-weight: 500; }
+/* Sub-brand col */
+#panel-admin table th:nth-child(3),
+#panel-admin table td:nth-child(3) { width: 130px; min-width: 110px; }
+/* Fabric col */
+#panel-admin table th:nth-child(4),
+#panel-admin table td:nth-child(4) { width: 80px; min-width: 70px; }
+/* Agent col */
+#panel-admin table th:nth-child(5),
+#panel-admin table td:nth-child(5) { width: 72px; min-width: 60px; }
+/* Actions col */
+#panel-admin table th:nth-child(6),
+#panel-admin table td:nth-child(6) { width: 80px; min-width: 76px; overflow: visible; }
+/* Smaller thumb inside admin table */
+#panel-admin .thumb { width: 44px; height: 44px; font-size: 20px; }
+.admin-stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.count-cell { border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
+.count-cell-neutral { background: var(--surface-2); border: 1px solid var(--border-3); }
+.count-cell-approved { background: var(--approved-bg); border: 1px solid var(--approved-border); }
+.count-cell-hold { background: var(--onhold-bg); border: 1px solid var(--onhold-border); }
+.count-cell-pending { background: var(--pending-bg); border: 1px solid var(--pending-border); }
+.count-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.count-cell-neutral .count-icon { background: var(--surface-3); color: var(--text-2); }
+.count-cell-approved .count-icon { background: rgba(29,158,117,.12); color: var(--approved-text); }
+.count-cell-hold .count-icon { background: rgba(239,159,39,.15); color: var(--onhold-text); }
+.count-cell-pending .count-icon { background: rgba(55,138,221,.12); color: var(--pending-text); }
+.count-text { flex: 1; }
+.count-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+.count-val { font-size: 28px; font-weight: 700; font-family: var(--font-mono); line-height: 1; }
+.count-cell-neutral .count-lbl { color: var(--text-3); }
+.count-cell-neutral .count-val { color: var(--text-1); }
+.count-cell-approved .count-lbl, .count-cell-approved .count-val { color: var(--approved-text); }
+.count-cell-hold .count-lbl, .count-cell-hold .count-val { color: var(--onhold-text); }
+.count-cell-pending .count-lbl, .count-cell-pending .count-val { color: var(--pending-text); }
+
+/* ── Admin queue extras ── */
+.queue-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.queue-search-wrap { display: flex; align-items: center; gap: 8px; }
+.queue-search { position: relative; }
+.queue-search i { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--text-3); pointer-events: none; }
+.queue-search input { padding: 6px 10px 6px 28px; border-radius: var(--radius-md); border: 1px solid var(--border-2); background: var(--surface-2); font-family: var(--font); font-size: 12px; color: var(--text-1); outline: none; width: 150px; }
+.bulk-approve-btn {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+  padding: 7px 13px; border-radius: var(--radius-md); background: var(--approved-bg);
+  color: var(--approved-text); border: 1px solid var(--approved-border); cursor: pointer;
+  font-family: var(--font); transition: opacity .15s;
+}
+.bulk-approve-btn:hover { opacity: .8; }
+
+/* ── Modal overlay ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.28); z-index: 1000;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border-radius: var(--radius-xl);
+  border: 1px solid var(--border-2); padding: 24px; width: 100%; max-width: 420px;
+  box-shadow: var(--shadow-modal); animation: modal-in .2s ease;
+}
+@keyframes row-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes modal-in { from { opacity: 0; transform: scale(.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal-title { font-size: 16px; font-weight: 600; color: var(--text-1); margin-bottom: 5px; letter-spacing: -.01em; }
+.modal-sub { font-size: 13px; color: var(--text-2); line-height: 1.5; margin-bottom: 14px; }
+.modal-info-block { background: var(--surface-2); border-radius: var(--radius-md); padding: 11px 13px; font-size: 12px; color: var(--text-2); line-height: 1.5; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.modal-btn { font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: var(--radius-lg); border: 1px solid var(--border-2); background: var(--surface-2); color: var(--text-1); cursor: pointer; font-family: var(--font); transition: all .15s; }
+.modal-btn:hover { background: var(--surface-3); }
+.modal-btn.primary { background: var(--text-1); color: #fff; border-color: var(--text-1); }
+.modal-btn.primary:hover { opacity: .85; }
+.modal-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.color-picker-input { height: 36px; padding: 2px 4px; cursor: pointer; }
+
+/* ── Toast ── */
+.toast-container { position: fixed; top: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast {
+  display: flex; align-items: center; gap: 9px; padding: 10px 16px;
+  border-radius: var(--radius-lg); font-size: 13px; font-weight: 500;
+  border: 1px solid; white-space: nowrap; pointer-events: auto;
+  animation: toast-in .25s ease; box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+}
+.toast.out { animation: toast-out .2s ease forwards; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(-10px); } }
+.toast-success { background: var(--approved-bg); color: var(--approved-text); border-color: var(--approved-border); }
+.toast-hold { background: var(--onhold-bg); color: var(--onhold-text); border-color: var(--onhold-border); }
+.toast-info { background: var(--pending-bg); color: var(--pending-text); border-color: var(--pending-border); }
+
+/* ── Panel visibility ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── Util ── */
+.hidden { display: none !important; }
+/* ── Request detail drawer ── */
+#req-tbody tr.data-row { cursor: pointer; }
+#req-tbody tr.data-row:hover { background: var(--surface-2); }
+#req-tbody tr.data-row.open-row > td:first-child { border-left: 3px solid var(--border-1); }
+#admin-tbody tr.data-row { cursor: pointer; }
+#admin-tbody tr.data-row:hover { background: var(--surface-2); }
+#admin-tbody tr.data-row.open-row > td:first-child { border-left: 3px solid var(--border-1); }
+.detail-drawer td { padding: 0 !important; cursor: default; border-bottom: 1px solid var(--border-3); }
+.detail-drawer:hover { background: transparent !important; }
+.drawer-inner { padding: 16px 20px; background: var(--surface-2); border-top: 1px solid var(--border-3); animation: drawer-in .2s ease; }
+@keyframes drawer-in { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.drawer-header { display:flex; align-items:center; margin-bottom:14px; }
+.drawer-title { font-size:14px; font-weight:600; color:var(--text-1); }
+.drawer-close { margin-left:auto; font-size:12px; color:var(--text-3); background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:4px; padding:0; font-family:var(--font); font-weight:500; }
+.drawer-close:hover { color:var(--text-1); }
+.drawer-grid { display:grid; grid-template-columns:220px 1fr; gap:20px; align-items:start; }
+.drawer-img { width:220px; height:300px; border-radius:var(--radius-lg); object-fit:cover; border:1px solid var(--border-2); display:block; background:var(--surface-3); }
+.drawer-img-placeholder { width:220px; height:300px; border-radius:var(--radius-lg); border:1px solid var(--border-2); display:flex; align-items:center; justify-content:center; font-size:72px; background:var(--surface-3); }
+.drawer-right { display:flex; flex-direction:column; gap:10px; }
+.drawer-section-title { font-size:10px; font-weight:600; color:var(--text-3); text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; display:flex; align-items:center; gap:5px; cursor:pointer; user-select:none; }
+.drawer-section-title i.chevron { font-size:13px; transition:transform .15s; }
+.drawer-section-title.collapsed i.chevron { transform:rotate(-90deg); }
+.drawer-body.collapsed { display:none; }
+.drawer-meta-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; }
+.drawer-meta-cell { background:var(--surface); border-radius:var(--radius-md); padding:8px 11px; }
+.drawer-meta-lbl { font-size:10px; font-weight:600; color:var(--text-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
+.drawer-meta-val { font-size:13px; color:var(--text-1); font-weight:500; }
+.drawer-link { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; color:var(--pending-text); text-decoration:none; padding:6px 11px; border-radius:var(--radius-md); background:var(--pending-bg); border:1px solid var(--pending-border); transition:opacity .15s; word-break:break-all; }
+.drawer-link:hover { opacity:.8; }
+.drawer-no-link { font-size:12px; color:var(--text-3); font-style:italic; }
+.drawer-remarks { font-size:13px; color:var(--text-1); line-height:1.6; background:var(--surface); border-radius:var(--radius-md); padding:10px 12px; border:1px solid var(--border-2); }
+.drawer-admin-remark { font-size:13px; color:var(--onhold-text); line-height:1.6; background:var(--onhold-bg); border-radius:var(--radius-md); padding:10px 12px; border:1px solid var(--onhold-border); }
+/* ── Admin drawer actions ── */
+.drawer-action-row { display: flex; gap: 8px; margin-top: 10px; }
+.drawer-action-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+  font-size: 13px; font-weight: 600; padding: 9px 14px; border-radius: var(--radius-lg);
+  cursor: pointer; font-family: var(--font); border: 1.5px solid; transition: opacity .15s;
+}
+.drawer-action-btn:hover { opacity: .85; }
+.drawer-action-approve { background: var(--approved-bg); color: var(--approved-text); border-color: var(--approved-border); }
+.drawer-action-hold { background: #FDECEA; color: #D93025; border-color: rgba(217,48,37,.35); }
+.drawer-action-btn:disabled { opacity: .45; cursor: default; }
+.drawer-remark-input {
+  width: 100%; padding: 8px 11px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-2); background: var(--surface);
+  font-family: var(--font); font-size: 13px; color: var(--text-1);
+  outline: none; resize: none; height: 68px; line-height: 1.5; transition: border-color .15s;
+}
+.drawer-remark-input:focus { border-color: var(--border-1); }
+.drawer-remark-input::placeholder { color: var(--text-3); }
+
+/* ── Approval details modal ── */
+.approval-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 300; display: flex; align-items: flex-start; justify-content: center;
+  padding: 24px 16px; overflow-y: auto;
+}
+.approval-modal-overlay.hidden { display: none; }
+.approval-modal {
+  background: var(--surface); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-modal); width: 100%; max-width: 680px;
+  padding: 0; overflow: hidden; margin: auto;
+}
+.apv-header {
+  background: var(--approved-bg); border-bottom: 1px solid var(--approved-border);
+  padding: 18px 24px; display: flex; align-items: center; gap: 12px;
+}
+.apv-header-icon { width: 36px; height: 36px; border-radius: var(--radius-md); background: rgba(29,158,117,.15); display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--approved-text); flex-shrink: 0; }
+.apv-header-title { font-size: 15px; font-weight: 700; color: var(--approved-text); }
+.apv-header-sub { font-size: 12px; color: var(--approved-text); opacity: .75; margin-top: 2px; }
+.apv-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+.apv-section { border: 1px solid var(--border-3); border-radius: var(--radius-lg); overflow: hidden; }
+.apv-section-hd {
+  padding: 10px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border-3);
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2);
+  display: flex; align-items: center; gap: 7px;
+}
+.apv-section-hd i { font-size: 14px; }
+.apv-section-bd { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.apv-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.apv-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.apv-row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+.apv-field { display: flex; flex-direction: column; gap: 4px; }
+.apv-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); }
+.apv-value { font-size: 13px; font-weight: 500; color: var(--text-1); padding: 4px 0; }
+.apv-input {
+  width: 100%; padding: 8px 11px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-2); background: var(--surface);
+  font-family: var(--font); font-size: 13px; color: var(--text-1);
+  outline: none; transition: border-color .15s;
+}
+.apv-input:focus { border-color: var(--border-1); }
+.apv-input::placeholder { color: var(--text-3); }
+.apv-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A8A7A2' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; cursor: pointer; }
+.apv-textarea { resize: none; height: 60px; line-height: 1.5; }
+.acc-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; background: var(--pending-bg); color: var(--pending-text); border: 1px solid var(--pending-border); }
+.acc-tag button { background: none; border: none; cursor: pointer; color: var(--pending-text); font-size: 14px; line-height: 1; padding: 0 0 0 2px; display: flex; align-items: center; }
+.acc-tags-row { display: flex; flex-wrap: wrap; gap: 6px; min-height: 28px; align-items: center; }
+.acc-add-row { display: grid; grid-template-columns: 1fr 110px 90px 60px; gap: 8px; align-items: end; }
+.apv-footer { padding: 14px 24px; border-top: 1px solid var(--border-3); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface-2); }
+.apv-btn-cancel { padding: 9px 18px; border-radius: var(--radius-lg); border: 1px solid var(--border-2); background: var(--surface); color: var(--text-2); font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; }
+.apv-btn-approve { padding: 9px 20px; border-radius: var(--radius-lg); border: none; background: #085041; color: #fff; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: opacity .15s; }
+.apv-btn-approve:hover { opacity: .88; }
+
+.pending-edit-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 500; padding: 4px 10px;
+  border-radius: var(--radius-md); border: 1px solid var(--pending-border);
+  background: var(--pending-bg); color: var(--pending-text);
+  cursor: pointer; font-family: var(--font); transition: all .15s;
+  white-space: nowrap;
+}
+.pending-edit-btn:hover { opacity: .8; }
+.pending-edit-btn i { font-size: 12px; }
+
+/* ── Validation error state ── */
+.field-error .field-input, .field-error select.field-input { border-color: #E53935 !important; background: #FFF5F5 !important; }
+.field-error .field-label { color: #E53935 !important; }
+.validation-popup {
+  position: fixed; top: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%);
+  z-index: 2000; background: var(--surface); border: 1px solid #FFCDD2;
+  border-radius: var(--radius-lg); padding: 14px 18px; min-width: 320px; max-width: 420px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12); animation: toast-in .25s ease;
+}
+.validation-popup-title { font-size: 13px; font-weight: 600; color: #C62828; margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
+.validation-popup-list { list-style: none; padding: 0; margin: 0; }
+.validation-popup-list li { font-size: 12px; color: var(--text-2); padding: 3px 0; display: flex; align-items: center; gap: 7px; }
+.validation-popup-list li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #E53935; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Top nav -->
+<nav class="topnav">
+  <div class="logo">little<span>box</span></div>
+  <div class="nav-search">
+    <i class="ti ti-search"></i>
+    <input type="text" id="nav-search-input" placeholder="Search my requests...">
+  </div>
+  <div class="nav-right">
+    <button class="nav-icon-btn"><i class="ti ti-bell"></i></button>
+    <button class="nav-icon-btn"><i class="ti ti-user"></i></button>
+  </div>
+</nav>
+
+<!-- App body -->
+<div class="app-body">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- AGENT PANEL -->
+    <div id="panel-agent" class="panel active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Procurement Workspace</div>
+          <div class="page-sub">Send new product requests and track their progress.</div>
+        </div>
+        <div class="role-toggle">
+          <button class="role-toggle-btn active" id="hdr-agent-btn" onclick="switchRole('agent')">Agent Designer</button>
+          <button class="role-toggle-btn" id="hdr-admin-btn" onclick="switchRole('admin')">Admin Designer</button>
+        </div>
+      </div>
+
+      <div id="edit-mode-banner" style="display:none;align-items:center;gap:10px;background:var(--pending-bg);border:1px solid var(--pending-border);border-radius:var(--radius-lg);padding:10px 16px;margin-bottom:14px;">
+        <i class="ti ti-edit" style="font-size:16px;color:var(--pending-text);flex-shrink:0"></i>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--pending-text)" id="edit-banner-title">Editing request</div>
+          <div style="font-size:12px;color:var(--pending-text);opacity:.8;margin-top:1px">Make your changes below and re-submit. The original request will be updated.</div>
+        </div>
+        <button onclick="cancelEditMode()" style="font-size:12px;font-weight:500;color:var(--pending-text);background:none;border:1px solid var(--pending-border);border-radius:var(--radius-md);padding:5px 12px;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px;white-space:nowrap;"><i class="ti ti-x" style="font-size:12px"></i> Cancel edit</button>
+      </div>
+
+      <div class="two-col">
+        <!-- Product info card -->
+        <div class="card">
+          <div class="card-label">Product information</div>
+          <div class="field-group">
+            <label class="field-label">Product name</label>
+            <input class="field-input" type="text" placeholder="e.g. Summer Breeze Dress" id="prod-name">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Product link</label>
+            <div class="link-input-wrap">
+              <i class="ti ti-world link-icon"></i>
+              <input type="url" id="prod-url" placeholder="Paste product page URL here">
+              <button onclick="clearField('prod-url')" id="prod-url-clear" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:var(--text-3);color:#fff;border:none;font-size:11px;cursor:pointer;line-height:1;padding:0;align-items:center;justify-content:center;flex-shrink:0;" title="Clear">×</button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Product image URL</label>
+            <div class="link-input-wrap">
+              <i class="ti ti-photo link-icon"></i>
+              <input type="url" id="img-url" placeholder="Paste image URL here" oninput="previewImg(this.value)">
+              <button onclick="removeImage()" id="img-url-clear" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:var(--text-3);color:#fff;border:none;font-size:11px;cursor:pointer;line-height:1;padding:0;align-items:center;justify-content:center;flex-shrink:0;" title="Clear">×</button>
+            </div>
+            <div id="img-preview-wrap" style="display:none;position:relative;margin-top:8px;width:fit-content;min-width:80px;min-height:60px;background:var(--surface-2);border-radius:var(--radius-md);">
+              <img id="img-preview" src="" alt="Product preview" style="max-height:160px;max-width:100%;border-radius:var(--radius-md);border:1px solid var(--border-2);display:block;object-fit:cover;">
+              <button onclick="removeImage()" style="position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:var(--text-1);color:#fff;border:2px solid var(--surface);font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;z-index:1;" title="Remove image">×</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label class="field-label">Sub-brand</label>
+              <select class="field-input">
+                <option value="">Select sub-brand</option>
+                <option>365 by Littlebox</option>
+                <option>Clubbox</option>
+                <option>Lace &amp; blush</option>
+                <option>Workish</option>
+                <option>After Hours</option>
+                <option>Altbox</option>
+                <option>Festive Edit</option>
+                <option>Layer by littlebox</option>
+                <option>Limited Drop</option>
+                <option>OG Fits</option>
+                <option>Y2K dream</option>
+                <option>Eco Edit</option>
+                <option>JetSetChic</option>
+                <option>LB Curve</option>
+                <option>LB COMBOS</option>
+                <option>Valentine Collection</option>
+                <option>Vacation</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Category</label>
+              <select class="field-input">
+                <option value="">Select category</option>
+                <option>Tops</option><option>Bottoms</option><option>Dresses</option>
+                <option>Outerwear</option><option>Knitwear</option><option>Accessories</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+            <div>
+              <label class="field-label">Remarks</label>
+              <input class="field-input" type="text" id="agent-remarks-input" placeholder="Optional notes for admin...">
+            </div>
+            <div>
+              <label class="field-label">Superimpose required</label>
+              <select class="field-input" id="superimpose-sel" onchange="onSuperimposeChange(this.value)">
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+          <div id="designer-field" style="display:none;margin-bottom:12px;">
+            <label class="field-label">Designer assigned</label>
+            <select class="field-input" id="designer-sel">
+              <option value="">Select designer</option>
+              <option>Aanya Sharma</option>
+              <option>Rohan Mehta</option>
+              <option>Priya Nair</option>
+              <option>Kabir Das</option>
+              <option>Meera Iyer</option>
+              <option>Arjun Kapoor</option>
+              <option>Divya Pillai</option>
+              <option>Sahil Verma</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fabric sourcing card -->
+        <div class="card">
+          <div class="card-label" style="margin-bottom:8px">Select fabric &amp; colour</div>
+          <div class="fabric-name-dropdown">
+            <label class="field-label">Fabric name</label>
+            <select class="field-input" id="fabric-name-sel" onchange="onFabricName(this)">
+              <option value="">Select fabric name</option>
+              <option>225 Twill</option><option>Cotton Poplin</option>
+              <option>Premium Linen</option><option>Rib Knit</option><option>Silk Crepe</option>
+            </select>
+          </div>
+          <div id="fabric-detail" class="hidden">
+            <label class="field-label" style="margin-bottom:8px">Fabric status</label>
+            <div class="status-pills">
+              <button class="status-pill sp-all active" id="pill-all" onclick="filterSwatches('all',this)">All</button>
+              <button class="status-pill sp-excess" id="pill-excess" onclick="filterSwatches('excess',this)"><span class="dot" style="background:#EF9F27"></span>Excess</button>
+              <button class="status-pill sp-regular" id="pill-regular" onclick="filterSwatches('regular',this)"><span class="dot" style="background:#378ADD"></span>Regular</button>
+              <button class="status-pill sp-mif" id="pill-mif" onclick="filterSwatches('mif',this)"><span class="dot" style="background:#1D9E75"></span>MIF</button>
+              <button class="status-pill" id="pill-new" onclick="filterSwatches('new',this)" style="border-color:var(--new-dot)"><span class="dot" style="background:var(--new-dot)"></span>New Fabric</button>
+            </div>
+            <div class="swatch-grid" id="swatch-grid"></div>
+            <div class="sel-strip" id="sel-strip">
+              <span style="font-size:12px;color:var(--text-3)">Tap a swatch to select colour</span>
+            </div>
+            <div class="stock-row hidden" id="stock-row">
+              <div class="stock-cell"><div class="stock-lbl">Amount</div><div class="stock-val" id="sv-stock">—</div></div>
+              <div class="stock-cell"><div class="stock-lbl">Excess</div><div class="stock-val" id="sv-free">—</div></div>
+            </div>
+          </div>
+          <button class="add-fabric-btn" onclick="openModal('modal-add-fabric')">
+            <i class="ti ti-plus"></i> Add new fabric
+          </button>
+        </div>
+      </div>
+
+      <!-- CTA row -->
+      <div class="cta-row">
+        <button class="btn-secondary" onclick="saveDraft()"><i class="ti ti-device-floppy"></i> Save as draft</button>
+        <button class="btn-primary" id="submit-btn" onclick="validateAndSubmit()"><i class="ti ti-send" id="submit-btn-icon"></i> <span id="submit-btn-label">Submit new request</span></button>
+      </div>
+
+      <!-- Requests table card -->
+      <div class="card">
+        <div class="tabs-row">
+          <button class="tab-btn active" onclick="switchTab('requests',this)">My requests</button>
+          <button class="tab-btn" onclick="switchTab('drafts',this)">Saved drafts <span class="draft-badge" id="draft-count">2</span></button>
+        </div>
+
+        <div id="tab-requests">
+          <div class="filter-row-1">
+            <button class="filter-tab all active agent-filter-tab" onclick="filterStatus('all',this)">All</button>
+            <button class="filter-tab approved agent-filter-tab" onclick="filterStatus('approved',this)">Approved</button>
+            <button class="filter-tab pending agent-filter-tab" onclick="filterStatus('pending',this)">Pending</button>
+            <button class="filter-tab onhold agent-filter-tab" onclick="filterStatus('onhold',this)">On hold</button>
+            <button class="filter-tab superimpose agent-filter-tab" id="agent-si-filter" onclick="filterStatus('superimpose',this)">Superimposed</button>
+            <div class="cal-wrap" id="cal-wrap">
+              <button class="cal-btn" id="cal-btn" onclick="toggleCal(event)">
+                <i class="ti ti-calendar" style="font-size:14px"></i>
+                <span id="cal-label">Filter by date</span>
+                <i class="ti ti-chevron-down cal-chevron" id="cal-chev"></i>
+              </button>
+              <div class="cal-popup" id="cal-popup">
+                <div class="cal-view-tabs">
+                  <button class="cal-view-tab active" id="vt-day" onclick="setView('day',event)">Day</button>
+                  <button class="cal-view-tab" id="vt-month" onclick="setView('month',event)">Month</button>
+                  <button class="cal-view-tab" id="vt-year" onclick="setView('year',event)">Year</button>
+                </div>
+                <div class="cal-nav">
+                  <button class="cal-nav-btn" onclick="navPrev(event)"><i class="ti ti-chevron-left"></i></button>
+                  <span class="cal-heading" id="cal-heading" onclick="drillUp(event)"></span>
+                  <button class="cal-nav-btn" onclick="navNext(event)"><i class="ti ti-chevron-right"></i></button>
+                </div>
+                <div id="cal-body"></div>
+                <div class="cal-footer">
+                  <button class="cal-clear" onclick="clearDateFilter(event)">Clear filter</button>
+                  <span class="cal-status-lbl" id="cal-status">No filter active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="filter-row-2">
+            <div class="search-full"><i class="ti ti-search"></i><input type="text" placeholder="Search requests by product name..." oninput="filterSearch(this.value)"></div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:76px">Image</th>
+                  <th>Product</th>
+                  <th style="width:110px">Collection</th>
+                  <th style="width:88px">Status</th>
+                  <th style="width:80px">Fabric</th>
+                  <th style="width:95px">Colour ID</th>
+                  <th style="width:88px">Superimpose</th>
+                  <th style="width:100px">Designer</th>
+                  <th style="width:80px">Admin note</th>
+                  <th style="width:70px">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="req-tbody">
+                <tr class="data-row" data-status="approved" data-name="summer breeze dress" data-date="2026-05-13" data-full-name="Summer Breeze Dress" data-collection="SS26 Resort" data-category="Dresses" data-fabric="225 Twill" data-colour-id="CP-401" data-colour-hex="#E8846A" data-img-url="" data-prod-url="https://example.com/summer-breeze-dress" data-remarks="Soft drape preferred. Check lining options." data-admin-remark="Good texture choice. Approved." data-superimpose="Yes" data-designer="Aanya Sharma" onclick="toggleDrawer(this)">
+                  <td><div class="thumb thumb-excess">👗</div></td>
+                  <td>Summer Breeze Dress</td>
+                  <td>SS26 Resort</td>
+                  <td><span class="sb s-approved">Approved</span></td>
+                  <td><span class="fab-badge fb-excess">Excess</span></td>
+                  <td><div class="colour-id"><div class="colour-id-dot" style="background:#E8846A"></div><span class="colour-id-code">CP-401</span></div></td>
+                  <td><span class="sb s-approved" style="font-size:10px">View</span></td>
+                  <td><span class="si-badge si-yes">Yes</span></td>
+                  <td style="font-size:12px">Aanya Sharma</td>
+                  <td></td>
+                </tr>
+                <tr class="data-row" data-status="pending" data-name="linen wrap top" data-date="2026-05-12" data-full-name="Linen Wrap Top" data-collection="SS26 Core" data-category="Tops" data-fabric="Premium Linen" data-colour-id="MB-202" data-colour-hex="#378ADD" data-img-url="" data-prod-url="" data-remarks="" data-admin-remark="" data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
+                  <td><div class="thumb thumb-mif">👕</div></td>
+                  <td>Linen Wrap Top</td>
+                  <td>SS26 Core</td>
+                  <td><span class="sb s-pending">Pending</span></td>
+                  <td><span class="fab-badge fb-mif">MIF</span></td>
+                  <td><div class="colour-id"><div class="colour-id-dot" style="background:#378ADD"></div><span class="colour-id-code">MB-202</span></div></td>
+                  <td><span class="si-badge si-no">No</span></td>
+                  <td><span style="color:var(--text-3)">—</span></td>
+                  <td><span style="color:var(--text-3)">—</span></td>
+                  <td><button class="pending-edit-btn" onclick="event.stopPropagation();openEditModal(this.closest('tr'))"><i class="ti ti-edit"></i> Edit</button></td>
+                </tr>
+                <tr class="data-row" data-status="onhold" data-name="ribbed knit trousers" data-date="2026-05-11" data-full-name="Ribbed Knit Trousers" data-collection="AW26 Preview" data-category="Bottoms" data-fabric="Rib Knit" data-colour-id="CB-001" data-colour-hex="#2C2C2A" data-img-url="" data-prod-url="https://example.com/ribbed-knit-trousers" data-superimpose="Yes" data-designer="Rohan Mehta" data-remarks="Confirm weight of knit before proceeding." data-admin-remark="Fabric sourcing delayed. Awaiting stock confirmation from supplier." onclick="toggleDrawer(this)">
+                  <td><div class="thumb thumb-regular">👖</div></td>
+                  <td>Ribbed Knit Trousers</td>
+                  <td>AW26 Preview</td>
+                  <td><span class="sb s-onhold">On hold</span></td>
+                  <td><span class="fab-badge fb-regular">Regular</span></td>
+                  <td><div class="colour-id"><div class="colour-id-dot" style="background:#2C2C2A"></div><span class="colour-id-code">CB-001</span></div></td>
+                  <td><span class="si-badge si-yes">Yes</span></td>
+                  <td style="font-size:12px">Rohan Mehta</td>
+                  <td><span class="sb s-onhold" style="font-size:10px">View</span></td>
+                  <td></td>
+                </tr>
+                <tr class="data-row" data-status="approved" data-name="silk midi skirt" data-date="2026-04-28" data-full-name="Silk Midi Skirt" data-collection="SS26 Core" data-category="Bottoms" data-fabric="Silk Crepe" data-colour-id="SG-115" data-colour-hex="#8CB87A" data-img-url="" data-prod-url="" data-remarks="" data-admin-remark="" data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
+                  <td><div class="thumb thumb-excess">👗</div></td>
+                  <td>Silk Midi Skirt</td>
+                  <td>SS26 Core</td>
+                  <td><span class="sb s-approved">Approved</span></td>
+                  <td><span class="fab-badge fb-excess">Excess</span></td>
+                  <td><div class="colour-id"><div class="colour-id-dot" style="background:#8CB87A"></div><span class="colour-id-code">SG-115</span></div></td>
+                  <td><span class="si-badge si-no">No</span></td>
+                  <td><span style="color:var(--text-3)">—</span></td>
+                  <td><span style="color:var(--text-3)">—</span></td>
+                  <td></td>
+                </tr>
+                <tr class="data-row" data-status="pending" data-name="cotton bomber jacket" data-date="2026-04-15" data-full-name="Cotton Bomber Jacket" data-collection="AW26 Main" data-category="Outerwear" data-fabric="Cotton Poplin" data-colour-id="RS-212" data-colour-hex="#D4537E" data-img-url="" data-prod-url="https://example.com/cotton-bomber" data-remarks="Check sleeve length options." data-admin-remark="" data-superimpose="Yes" data-designer="Priya Nair" onclick="toggleDrawer(this)">
+                  <td><div class="thumb thumb-regular">🧥</div></td>
+                  <td>Cotton Bomber Jacket</td>
+                  <td>AW26 Main</td>
+                  <td><span class="sb s-pending">Pending</span></td>
+                  <td><span class="fab-badge fb-regular">Regular</span></td>
+                  <td><div class="colour-id"><div class="colour-id-dot" style="background:#D4537E"></div><span class="colour-id-code">RS-212</span></div></td>
+                  <td><span class="si-badge si-yes">Yes</span></td>
+                  <td style="font-size:12px">Priya Nair</td>
+                  <td><span style="color:var(--text-3)">—</span></td>
+                  <td><button class="pending-edit-btn" onclick="event.stopPropagation();openEditModal(this.closest('tr'))"><i class="ti ti-edit"></i> Edit</button></td>
+                </tr>
+                <tr class="data-row" data-status="onhold" data-name="pleated wide leg pants" data-date="2026-03-20" data-full-name="Pleated Wide Leg Pants" data-collection="SS26 Resort" data-category="Bottoms" data-fabric="Premium Linen" data-colour-id="TL-304" data-colour-hex="#1D9E75" data-img-url="" data-prod-url="" data-remarks="Wide leg fit — needs extra fabric allowance." data-admin-remark="MIF allocation under review. Hold until Q3 clearance." data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
+                  <td><div class="thumb thumb-mif">👗</div></td>
+                  <td>Pleated Wide Leg Pants</td>
+                  <td>SS26 Resort</td>
+                  <td><span class="sb s-onhold">On hold</span></td>
+                  <td><span class="fab-badge fb-mif">MIF</span></td>
+                  <td><div class="colour-id"><div class="colour-id-dot" style="background:#1D9E75"></div><span class="colour-id-code">TL-304</span></div></td>
+                  <td><span class="si-badge si-no">No</span></td>
+                  <td><span style="color:var(--text-3)">—</span></td>
+                  <td><span class="sb s-onhold" style="font-size:10px">View</span></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <div class="pag-left">Show <select class="per-page-sel" onchange="changePerPage(this.value)"><option value="5" selected>5</option><option value="10">10</option><option value="20">20</option></select> per page <span class="result-count" id="row-count">• 6 results</span></div>
+            <div class="page-btns">
+              <button class="page-btn" onclick="changePage(-1)"><i class="ti ti-chevron-left"></i></button>
+              <button class="page-btn active" id="pg1" onclick="goPage(1)">1</button>
+              <button class="page-btn" id="pg2" onclick="goPage(2)">2</button>
+              <button class="page-btn" onclick="changePage(1)"><i class="ti ti-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-drafts" class="hidden">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th style="width:60px">Image</th><th>Product</th><th style="width:110px">Collection</th><th style="width:75px">Status</th><th style="width:80px">Fabric</th><th style="width:95px">Colour ID</th><th style="width:80px">Actions</th></tr></thead>
+              <tbody id="draft-tbody">
+                <tr data-draft-name="Casual Linen Blazer" data-draft-collection="AW26 Essentials" data-draft-category="Outerwear" data-draft-fabric="" data-draft-colour="" data-draft-remarks="Need to confirm lining fabric first.">
+                  <td><div class="thumb" style="background:var(--surface-2)">👗</div></td>
+                  <td style="font-weight:500">Casual Linen Blazer</td>
+                  <td style="color:var(--text-2);font-size:12px">AW26 Essentials</td>
+                  <td><span class="sb s-draft">Draft</span></td>
+                  <td style="color:var(--text-3);font-size:12px">Not selected</td>
+                  <td style="color:var(--text-3)">—</td>
+                  <td><div class="act-actions">
+                    <button class="act-icon-btn review" onclick="loadDraft(this)"><i class="ti ti-edit"></i><span class="tip">Continue editing</span></button>
+                    <button class="act-icon-btn" onclick="deleteDraft(this)"><i class="ti ti-trash"></i><span class="tip">Delete</span></button>
+                  </div></td>
+                </tr>
+                <tr data-draft-name="Pleated Wide Leg Pants" data-draft-collection="SS26 Resort" data-draft-category="Bottoms" data-draft-fabric="Premium Linen" data-draft-colour="TL-304" data-draft-remarks="">
+                  <td><div class="thumb thumb-mif">👖</div></td>
+                  <td style="font-weight:500">Pleated Wide Leg Pants</td>
+                  <td style="color:var(--text-2);font-size:12px">SS26 Resort</td>
+                  <td><span class="sb s-draft">Draft</span></td>
+                  <td><span class="fab-badge fb-mif">MIF</span></td>
+                  <td><div class="colour-id"><div class="colour-id-dot" style="background:#1D9E75"></div><span class="colour-id-code">TL-304</span></div></td>
+                  <td><div class="act-actions">
+                    <button class="act-icon-btn review" onclick="loadDraft(this)"><i class="ti ti-edit"></i><span class="tip">Continue editing</span></button>
+                    <button class="act-icon-btn" onclick="deleteDraft(this)"><i class="ti ti-trash"></i><span class="tip">Delete</span></button>
+                  </div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="panel-admin" class="panel">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Procurement Queue</div>
+          <div class="page-sub">Check product requests, approve or hold submissions.</div>
+        </div>
+        <div class="role-toggle">
+          <button class="role-toggle-btn" id="hdr-agent-btn2" onclick="switchRole('agent')">Agent Designer</button>
+          <button class="role-toggle-btn active" id="hdr-admin-btn2" onclick="switchRole('admin')">Admin Designer</button>
+        </div>
+      </div>
+
+      <div class="admin-stats-bar">
+        <div class="count-cell count-cell-pending">
+          <div class="count-icon"><i class="ti ti-clock"></i></div>
+          <div class="count-text">
+            <div class="count-lbl">Pending</div>
+            <div class="count-val" id="cnt-pending">3</div>
+          </div>
+        </div>
+        <div class="count-cell count-cell-approved">
+          <div class="count-icon"><i class="ti ti-circle-check"></i></div>
+          <div class="count-text">
+            <div class="count-lbl">Approved</div>
+            <div class="count-val" id="cnt-approved">0</div>
+          </div>
+        </div>
+        <div class="count-cell count-cell-hold">
+          <div class="count-icon"><i class="ti ti-player-pause"></i></div>
+          <div class="count-text">
+            <div class="count-lbl">On hold</div>
+            <div class="count-val" id="cnt-hold">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+          <div class="queue-header">
+            <div class="card-label" style="margin-bottom:0">Requests</div>
+            <div class="queue-search-wrap">
+              <div class="queue-search"><i class="ti ti-search"></i><input type="text" placeholder="Search queue..." oninput="filterAdmin(this.value)"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">
+            <button class="filter-tab all active" onclick="filterAdminStatus('all',this)">All</button>
+            <button class="filter-tab approved" onclick="filterAdminStatus('approved',this)">Approved</button>
+            <button class="filter-tab pending" onclick="filterAdminStatus('pending',this)">Pending</button>
+            <button class="filter-tab onhold" onclick="filterAdminStatus('onhold',this)">On hold</button>
+            <button class="filter-tab superimpose" onclick="filterAdminStatus('superimpose',this)">Superimposed</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th style="width:56px">Image</th><th>Product</th><th style="width:105px">Sub-brand</th><th style="width:72px">Fabric</th><th style="width:55px">Agent</th><th style="width:95px">Actions</th></tr></thead>
+              <tbody id="admin-tbody">
+                <tr class="data-row" data-astatus="pending" data-aname="summer breeze dress" data-afull-name="Summer Breeze Dress" data-acollection="SS26 Resort" data-acategory="Dresses" data-afabric="Excess" data-acolour-id="CP-401" data-acolour-hex="#E8846A" data-aagent="A. Smith" data-aremarks="Soft drape preferred. Check lining options." data-aadmin-remark="" data-asuperimpose="Yes" onclick="toggleAdminDrawer(this)">
+                  <td><div class="thumb thumb-excess">👗</div></td>
+                  <td>Summer Breeze Dress</td>
+                  <td>SS26 Resort</td>
+                  <td><span class="fab-badge fb-excess">Excess</span></td>
+                  <td>A. Smith</td>
+                  <td onclick="event.stopPropagation()"><div class="act-actions">
+                    <button class="act-icon-btn approve" onclick="inlineApprove(this)"><i class="ti ti-circle-check"></i><span class="tip">Approve</span></button>
+                    <button class="act-icon-btn hold" onclick="adminAction(this,'hold','Awaiting stock confirmation.')"><i class="ti ti-ban"></i><span class="tip">Put on hold</span></button>
+                  </div></td>
+                </tr>
+                <tr class="data-row" data-astatus="pending" data-aname="linen wrap top" data-afull-name="Linen Wrap Top" data-acollection="SS26 Core" data-acategory="Tops" data-afabric="MIF" data-acolour-id="MB-202" data-acolour-hex="#378ADD" data-aagent="J. Doe" data-aremarks="" data-aadmin-remark="" data-asuperimpose="No" onclick="toggleAdminDrawer(this)">
+                  <td><div class="thumb thumb-mif">👕</div></td>
+                  <td>Linen Wrap Top</td>
+                  <td>SS26 Core</td>
+                  <td><span class="fab-badge fb-mif">MIF</span></td>
+                  <td>J. Doe</td>
+                  <td onclick="event.stopPropagation()"><div class="act-actions">
+                    <button class="act-icon-btn approve" onclick="inlineApprove(this)"><i class="ti ti-circle-check"></i><span class="tip">Approve</span></button>
+                    <button class="act-icon-btn hold" onclick="adminAction(this,'hold','MIF allocation under review.')"><i class="ti ti-ban"></i><span class="tip">Put on hold</span></button>
+                  </div></td>
+                </tr>
+                <tr class="data-row" data-astatus="pending" data-aname="ribbed knit trousers" data-afull-name="Ribbed Knit Trousers" data-acollection="AW26 Preview" data-acategory="Bottoms" data-afabric="Regular" data-acolour-id="CB-001" data-acolour-hex="#2C2C2A" data-aagent="S. Lee" data-aremarks="Confirm weight of knit before proceeding." data-aadmin-remark="" data-asuperimpose="Yes" onclick="toggleAdminDrawer(this)">
+                  <td><div class="thumb thumb-regular">👖</div></td>
+                  <td>Ribbed Knit Trousers</td>
+                  <td>AW26 Preview</td>
+                  <td><span class="fab-badge fb-regular">Regular</span></td>
+                  <td>S. Lee</td>
+                  <td onclick="event.stopPropagation()"><div class="act-actions">
+                    <button class="act-icon-btn approve" onclick="inlineApprove(this)"><i class="ti ti-circle-check"></i><span class="tip">Approve</span></button>
+                    <button class="act-icon-btn hold" onclick="adminAction(this,'hold','Fabric sourcing delayed. Awaiting stock confirmation from supplier.')"><i class="ti ti-ban"></i><span class="tip">Put on hold</span></button>
+                  </div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" style="margin-top:10px">
+            <div class="pag-left"><span class="result-count">3 results</span></div>
+            <div class="page-btns"><button class="page-btn active">1</button><button class="page-btn" onclick="showToast('Page 2 would load more results','info')">2</button></div>
+          </div>
+        </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ── MODALS ── -->
+
+<!-- Submit modal -->
+<div class="modal-overlay" id="modal-submit">
+  <div class="modal">
+    <div class="modal-title" id="submit-modal-title">Submit request?</div>
+    <div class="modal-sub" id="submit-modal-sub">This sends your product request to the admin designer for review. You can track its status in the requests table.</div>
+    <div class="modal-info-block" id="submit-modal-info">All product details including fabric name, type, and colour ID will be attached to the submission.</div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeModal('modal-submit')">Cancel</button>
+      <button class="modal-btn primary" id="submit-modal-confirm-btn" onclick="confirmSubmit()">Confirm &amp; submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Draft saved modal -->
+<div class="modal-overlay" id="modal-draft-saved">
+  <div class="modal">
+    <div class="modal-title">Draft saved</div>
+    <div class="modal-sub">Your progress has been saved. You can find and continue editing it in the Saved drafts tab below.</div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="closeModal('modal-draft-saved')">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add fabric modal -->
+<div class="modal-overlay" id="modal-add-fabric">
+  <div class="modal">
+    <div class="modal-title">Add new fabric</div>
+    <div class="modal-sub">This fabric and colour will be added to the sourcing library and appear in the swatch grid.</div>
+    <div class="field-group">
+      <label class="field-label">Fabric material</label>
+      <input class="field-input" type="text" placeholder="e.g. Organic Cotton Twill">
+    </div>
+    <div class="modal-field-row">
+      <div><label class="field-label">Colour ID</label><input class="field-input" type="text" placeholder="e.g. OC-501"></div>
+      <div><label class="field-label">Colour name</label><input class="field-input" type="text" placeholder="e.g. Olive"></div>
+    </div>
+    <div class="modal-field-row">
+      <div><label class="field-label">Colour</label><input class="field-input color-picker-input" type="color" value="#639922"></div>
+      <div><label class="field-label">Quantity (m)</label><input class="field-input" type="number" placeholder="0" min="0"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeModal('modal-add-fabric')">Cancel</button>
+      <button class="modal-btn primary" onclick="closeModal('modal-add-fabric');showToast('New fabric added to library','success')">Add fabric</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin remarks modal -->
+<div class="modal-overlay" id="modal-remarks">
+  <div class="modal">
+    <div class="modal-title">Admin remarks</div>
+    <div class="modal-info-block" id="remarks-text" style="font-size:13px;line-height:1.7;color:var(--text-1);margin-top:8px"></div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="closeModal('modal-remarks')">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Approval details modal -->
+<div class="approval-modal-overlay hidden" id="approval-modal-overlay">
+  <div class="approval-modal">
+    <!-- Header -->
+    <div class="apv-header">
+      <div class="apv-header-icon"><i class="ti ti-circle-check"></i></div>
+      <div>
+        <div class="apv-header-title" id="apv-title">Approved Procurement — Link Details</div>
+        <div class="apv-header-sub" id="apv-sub">Fill in additional details before confirming approval</div>
+      </div>
+    </div>
+
+    <div class="apv-body">
+
+      <!-- Product details (pre-filled, read-only) -->
+      <div class="apv-section">
+        <div class="apv-section-hd"><i class="ti ti-info-circle"></i>Product details</div>
+        <div class="apv-section-bd">
+          <!-- Image + core info row -->
+          <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:4px">
+            <div id="apv-img-wrap" style="flex-shrink:0;width:140px;height:185px;border-radius:var(--radius-lg);background:var(--surface-3);border:1px solid var(--border-2);overflow:hidden;display:flex;align-items:center;justify-content:center;">
+              <img id="apv-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
+              <span id="apv-img-placeholder" style="font-size:48px">👗</span>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div class="apv-row-2" style="margin-bottom:10px">
+                <div class="apv-field"><div class="apv-label">Product name</div><div class="apv-value" id="apv-prod-name">—</div></div>
+                <div class="apv-field"><div class="apv-label">Agent</div><div class="apv-value" id="apv-agent">—</div></div>
+              </div>
+              <div class="apv-row-4">
+                <div class="apv-field"><div class="apv-label">For</div>
+                  <select class="apv-input apv-select" id="apv-for"><option>Clothing</option><option>Accessories</option><option>Footwear</option></select>
+                </div>
+                <div class="apv-field"><div class="apv-label">Category</div><div class="apv-value" id="apv-category">—</div></div>
+                <div class="apv-field"><div class="apv-label">Sub-brand</div><div class="apv-value" id="apv-collection">—</div></div>
+                <div class="apv-field"><div class="apv-label">Pattern type</div>
+                  <select class="apv-input apv-select" id="apv-pattern"><option value="">Select</option><option>New</option><option>Repeat</option><option>Variation</option></select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="apv-row-2">
+            <div class="apv-field"><div class="apv-label">Procurement remarks</div><textarea class="apv-input apv-textarea" id="apv-proc-remarks" placeholder="Add procurement remarks..."></textarea></div>
+            <div class="apv-field"><div class="apv-label">Sampling remarks</div><textarea class="apv-input apv-textarea" id="apv-samp-remarks" placeholder="Add sampling remarks..."></textarea></div>
+          </div>
+          <div class="apv-row-2">
+            <div class="apv-field"><div class="apv-label">Agent's remarks</div><div class="apv-value" id="apv-agent-remarks" style="font-size:12px;color:var(--text-2);font-weight:400">—</div></div>
+            <div class="apv-field"><div class="apv-label">Product link</div><div id="apv-prod-link" style="font-size:12px;padding:4px 0">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fabric -->
+      <div class="apv-section">
+        <div class="apv-section-hd"><i class="ti ti-stack"></i>Fabric</div>
+        <div class="apv-section-bd">
+          <div class="apv-row-2">
+            <div class="apv-field"><div class="apv-label">Fabric name</div><div class="apv-value" id="apv-fabric-name">—</div></div>
+            <div class="apv-field"><div class="apv-label">Colour</div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div id="apv-colour-dot" style="width:16px;height:16px;border-radius:50%;border:1px solid var(--border-2);flex-shrink:0"></div>
+                <span class="apv-value" id="apv-colour-name">—</span>
+                <span id="apv-fabric-badge" style="margin-left:auto"></span>
+              </div>
+            </div>
+          </div>
+          <div class="apv-row-3">
+            <div class="apv-field"><div class="apv-label">Fabric used (m)</div><input class="apv-input" type="number" id="apv-fabric-used" placeholder="0" min="0"></div>
+            <div class="apv-field"><div class="apv-label">Estimated consumption (m)</div><input class="apv-input" type="number" id="apv-est-consumption" placeholder="0" min="0"></div>
+            <div class="apv-field"><div class="apv-label">Input stage</div>
+              <select class="apv-input apv-select" id="apv-input-stage">
+                <option>Cutting</option><option>Stitching</option><option>Finishing</option><option>Washing</option><option>Packing</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accessories -->
+      <div class="apv-section">
+        <div class="apv-section-hd"><i class="ti ti-tag"></i>Accessories</div>
+        <div class="apv-section-bd">
+          <div class="acc-add-row">
+            <div class="apv-field"><div class="apv-label">Accessory name</div><input class="apv-input" type="text" id="acc-name-input" placeholder="e.g. Pearl button, Zipper..."></div>
+            <div class="apv-field"><div class="apv-label">Input stage</div>
+              <select class="apv-input apv-select" id="acc-stage-input">
+                <option>Cutting</option><option>Stitching</option><option>Finishing</option>
+              </select>
+            </div>
+            <div class="apv-field"><div class="apv-label">Consumption</div><input class="apv-input" type="text" id="acc-consumption-input" placeholder="e.g. 4 pcs"></div>
+            <div class="apv-field"><div class="apv-label">&nbsp;</div><button class="apv-btn-approve" style="width:100%;justify-content:center" onclick="addAccessory()"><i class="ti ti-plus"></i> Add</button></div>
+          </div>
+          <div><div class="apv-label" style="margin-bottom:6px">Selected accessories</div><div class="acc-tags-row" id="acc-tags-row"><span style="font-size:12px;color:var(--text-3)">No accessories added yet</span></div></div>
+        </div>
+      </div>
+
+      <!-- Extra details -->
+      <div class="apv-section">
+        <div class="apv-section-hd"><i class="ti ti-dots"></i>Extra details</div>
+        <div class="apv-section-bd">
+          <div class="apv-field"><textarea class="apv-input apv-textarea" id="apv-extra-notes" style="height:90px" placeholder="Any other details for the production team..."></textarea></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="apv-footer">
+      <button class="apv-btn-cancel" onclick="closeApprovalModal()">Cancel</button>
+      <button class="apv-btn-approve" onclick="confirmApproval()"><i class="ti ti-circle-check"></i> Confirm approval</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// A. New Fabric:   created_date >= TODAY - 60 days
+// B. MIF:          rate_of_consumption > 33 AND days_covered <= 60
+// C. Excess:       warehouse_stock >= requirement_45days * 2
+// D. Regular:      everything else
+function classifyFabric(s) {
+  var today = new Date();
+  var created = new Date(s.created_date);
+  var daysSinceCreated = (today - created) / (1000 * 60 * 60 * 24);
+  if (daysSinceCreated <= 60) return 'new';
+  if (s.rate_of_consumption > 33 && s.days_covered <= 60) return 'mif';
+  if (s.warehouse_stock >= s.requirement_45days * 2) return 'excess';
+  return 'regular';
+}
+
+// ── Data ──
+// Fields: colour, hex, emoji, stock (display), free (display),
+//         created_date, rate_of_consumption (m/day), days_covered,
+//         warehouse_stock (m), requirement_45days (m)
+var fabricSwatchesRaw = {
+  '225 Twill': [
+    {colour:'White',    hex:'#F4F2ED', emoji:'🤍', stock:'240m', free:'240m', created_date:'2025-01-10', rate_of_consumption:12, days_covered:90,  warehouse_stock:240,  requirement_45days:80},
+    {colour:'Black',    hex:'#1A1A1A', emoji:'🖤', stock:'180m', free:'180m', created_date:'2024-11-05', rate_of_consumption:15, days_covered:85,  warehouse_stock:180,  requirement_45days:60},
+    {colour:'Tan',      hex:'#A87C5D', emoji:'🟤', stock:'90m',  free:'60m',  created_date:'2025-03-20', rate_of_consumption:18, days_covered:55,  warehouse_stock:90,   requirement_45days:40},
+    {colour:'Maroon',   hex:'#6B1A1A', emoji:'❤️', stock:'120m', free:'120m', created_date:'2024-12-01', rate_of_consumption:10, days_covered:80,  warehouse_stock:120,  requirement_45days:40},
+    {colour:'Charcoal', hex:'#3D3D3D', emoji:'⬛', stock:'500m', free:'500m', created_date:'2024-08-15', rate_of_consumption:8,  days_covered:100, warehouse_stock:500,  requirement_45days:100},
+    {colour:'Olive',    hex:'#5C5C2A', emoji:'🟩', stock:'300m', free:'300m', created_date:'2024-09-01', rate_of_consumption:9,  days_covered:95,  warehouse_stock:300,  requirement_45days:90},
+    {colour:'Khaki',    hex:'#C3B091', emoji:'🟨', stock:'400m', free:'400m', created_date:'2024-10-10', rate_of_consumption:7,  days_covered:110, warehouse_stock:400,  requirement_45days:120},
+    {colour:'Brown',    hex:'#7B4B2A', emoji:'🟫', stock:'220m', free:'220m', created_date:'2025-04-01', rate_of_consumption:6,  days_covered:75,  warehouse_stock:220,  requirement_45days:80},
+    {colour:'Mid Blue', hex:'#378ADD', emoji:'🔵', stock:'120m', free:'80m',  created_date:'2024-07-20', rate_of_consumption:40, days_covered:50,  warehouse_stock:120,  requirement_45days:90},
+    {colour:'Teal',     hex:'#1D9E75', emoji:'🟢', stock:'60m',  free:'60m',  created_date:'2024-06-15', rate_of_consumption:45, days_covered:45,  warehouse_stock:60,   requirement_45days:80},
+    {colour:'Pearl',    hex:'#EAE6DD', emoji:'🌸', stock:'55m',  free:'55m',  created_date:'2026-03-25', rate_of_consumption:20, days_covered:70,  warehouse_stock:55,   requirement_45days:30},
+  ],
+  'Cotton Poplin': [
+    {colour:'White',    hex:'#F4F2ED', emoji:'🤍', stock:'500m', free:'500m', created_date:'2024-05-01', rate_of_consumption:10, days_covered:120, warehouse_stock:500,  requirement_45days:100},
+    {colour:'Sky Blue', hex:'#87CEEB', emoji:'🩵', stock:'300m', free:'300m', created_date:'2024-06-10', rate_of_consumption:12, days_covered:90,  warehouse_stock:300,  requirement_45days:90},
+    {colour:'Blush',    hex:'#F2A8A8', emoji:'🌸', stock:'80m',  free:'80m',  created_date:'2024-11-20', rate_of_consumption:8,  days_covered:70,  warehouse_stock:80,   requirement_45days:20},
+    {colour:'Mint',     hex:'#A8E6CF', emoji:'🟢', stock:'50m',  free:'50m',  created_date:'2025-01-05', rate_of_consumption:38, days_covered:55,  warehouse_stock:50,   requirement_45days:60},
+    {colour:'Coral',    hex:'#FF7F6B', emoji:'🧡', stock:'45m',  free:'45m',  created_date:'2026-04-10', rate_of_consumption:22, days_covered:80,  warehouse_stock:45,   requirement_45days:25},
+  ],
+  'Premium Linen': [
+    {colour:'Natural',  hex:'#E8D5B0', emoji:'🟡', stock:'120m', free:'90m',  created_date:'2024-08-01', rate_of_consumption:42, days_covered:50,  warehouse_stock:120,  requirement_45days:100},
+    {colour:'Ecru',     hex:'#C8B89A', emoji:'🟤', stock:'80m',  free:'80m',  created_date:'2024-09-15', rate_of_consumption:36, days_covered:58,  warehouse_stock:80,   requirement_45days:70},
+    {colour:'Slate',    hex:'#708090', emoji:'🩶', stock:'200m', free:'200m', created_date:'2024-07-20', rate_of_consumption:11, days_covered:100, warehouse_stock:200,  requirement_45days:60},
+    {colour:'Sage',     hex:'#8FAF86', emoji:'🌿', stock:'35m',  free:'35m',  created_date:'2026-04-20', rate_of_consumption:18, days_covered:70,  warehouse_stock:35,   requirement_45days:20},
+  ],
+  'Rib Knit': [
+    {colour:'Black',    hex:'#1A1A1A', emoji:'🖤', stock:'500m', free:'500m', created_date:'2024-06-01', rate_of_consumption:9,  days_covered:110, warehouse_stock:500,  requirement_45days:110},
+    {colour:'Cream',    hex:'#FFFDD0', emoji:'🤍', stock:'150m', free:'150m', created_date:'2024-10-05', rate_of_consumption:7,  days_covered:95,  warehouse_stock:150,  requirement_45days:40},
+    {colour:'Rust',     hex:'#B7410E', emoji:'🔶', stock:'70m',  free:'70m',  created_date:'2024-12-15', rate_of_consumption:6,  days_covered:80,  warehouse_stock:70,   requirement_45days:20},
+    {colour:'Lilac',    hex:'#C8A8D8', emoji:'💜', stock:'40m',  free:'40m',  created_date:'2026-05-01', rate_of_consumption:15, days_covered:75,  warehouse_stock:40,   requirement_45days:22},
+  ],
+  'Silk Crepe': [
+    {colour:'Ivory',    hex:'#FFFFF0', emoji:'🤍', stock:'40m',  free:'40m',  created_date:'2024-07-10', rate_of_consumption:44, days_covered:48,  warehouse_stock:40,   requirement_45days:60},
+    {colour:'Blush',    hex:'#F2A8A8', emoji:'🌸', stock:'30m',  free:'30m',  created_date:'2024-08-20', rate_of_consumption:38, days_covered:55,  warehouse_stock:30,   requirement_45days:50},
+    {colour:'Black',    hex:'#1A1A1A', emoji:'🖤', stock:'100m', free:'100m', created_date:'2024-05-15', rate_of_consumption:14, days_covered:85,  warehouse_stock:100,  requirement_45days:40},
+    {colour:'Champagne',hex:'#F7E7CE', emoji:'✨', stock:'25m',  free:'25m',  created_date:'2026-03-30', rate_of_consumption:20, days_covered:72,  warehouse_stock:25,   requirement_45days:14},
+  ]
+};
+
+// Compute type dynamically for every swatch
+var fabricSwatches = {};
+Object.keys(fabricSwatchesRaw).forEach(function(fabric) {
+  fabricSwatches[fabric] = fabricSwatchesRaw[fabric].map(function(s) {
+    return Object.assign({}, s, {type: classifyFabric(s)});
+  });
+});
+
+var barClass   = {excess:'bar-excess', regular:'bar-regular', mif:'bar-mif', new:'bar-new'};
+var badgeClass = {excess:'bc-excess',  regular:'bc-regular',  mif:'bc-mif',  new:'bc-new'};
+var catLabel   = {excess:'Excess',     regular:'Regular',     mif:'MIF',     new:'New Fabric'};
+var fbClass    = {excess:'fb-excess',  regular:'fb-regular',  mif:'fb-mif',  new:'fb-new'};
+var thumbClass = {excess:'thumb-excess',regular:'thumb-regular',mif:'thumb-mif',new:'thumb-new'};
+var curSwatchFilter = 'all';
+var curFilter = 'all', curPage = 1, perPage = 5;
+var adminCounts = {pending:3, approved:0, hold:0};
+
+// ── Sidebar nav ──
+var agentNav = [
+  {icon:'ti-layout-dashboard',label:'Procurement',active:true},
+  {icon:'ti-list',label:'My Requests'},
+  {icon:'ti-stack',label:'Materials'},
+  {icon:'ti-bell',label:'Notifications'},
+  {icon:'ti-user',label:'Profile'},
+];
+var adminNav = agentNav;
+
+function renderSidebar(role) {
+  var nav = role === 'agent' ? agentNav : adminNav;
+  var html = nav.map(function(item) {
+    return '<a class="nav-item'+(item.active?' active':'')+'" onclick="navClick(this)"><i class="ti '+item.icon+'"></i>'+item.label+'</a>';
+  }).join('');
+  document.getElementById('sidebar-nav').innerHTML = html;
+}
+
+function navClick(el) {
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  el.classList.add('active');
+}
+
+function switchRole(role) {
+  renderSidebar(role);
+  document.getElementById('panel-agent').classList.toggle('active', role === 'agent');
+  document.getElementById('panel-admin').classList.toggle('active', role === 'admin');
+  document.getElementById('nav-search-input').placeholder = role === 'agent' ? 'Search my requests...' : 'Search procurement queue...';
+  ['hdr-agent-btn','hdr-agent-btn2'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.toggle('active', role==='agent'); });
+  ['hdr-admin-btn','hdr-admin-btn2'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.toggle('active', role==='admin'); });
+}
+
+// ── Fabric ──
+function onFabricName(sel) {
+  var det = document.getElementById('fabric-detail');
+  if (!sel.value) { det.classList.add('hidden'); return; }
+  det.classList.remove('hidden');
+  curSwatchFilter = 'all';
+  resetPills();
+  renderSwatches(sel.value);
+  clearSwatchSel();
+}
+
+function renderSwatches(fabric) {
+  var sw = fabricSwatches[fabric] || [];
+  var g = document.getElementById('swatch-grid'); g.innerHTML = '';
+  sw.forEach(function(s) {
+    var item = document.createElement('div');
+    item.className = 'swatch-item' + (curSwatchFilter !== 'all' && s.type !== curSwatchFilter ? ' sw-hidden' : '');
+    item.dataset.type = s.type;
+    // Tooltip showing which rule classified it
+    var ruleTooltip = s.type === 'new' ? 'New Fabric: added within 60 days'
+      : s.type === 'mif' ? 'MIF: consumption >' + s.rate_of_consumption + 'm/day, ' + s.days_covered + ' days covered'
+      : s.type === 'excess' ? 'Excess: stock ' + s.warehouse_stock + 'm ≥ 2× 45-day req'
+      : 'Regular';
+    item.title = ruleTooltip;
+    item.innerHTML = '<div class="swatch-face" style="background:'+s.hex+'"><span>'+s.emoji+'</span></div><div class="swatch-bar '+barClass[s.type]+'"></div><div class="swatch-name">'+s.colour+'</div>';
+    item.onclick = function() { selectSwatch(item, s); };
+    g.appendChild(item);
+  });
+}
+
+function filterSwatches(type, btn) {
+  curSwatchFilter = type; resetPills(); btn.classList.add('active');
+  clearSwatchSel();
+  document.querySelectorAll('.swatch-item').forEach(function(el) { el.classList.toggle('sw-hidden', type !== 'all' && el.dataset.type !== type); });
+}
+
+function resetPills() {
+  ['all','excess','regular','mif','new'].forEach(function(t) {
+    var el = document.getElementById('pill-'+t);
+    if (el) el.classList.remove('active');
+  });
+}
+
+function selectSwatch(item, s) {
+  document.querySelectorAll('.swatch-item').forEach(function(el) { el.classList.remove('selected'); });
+  item.classList.add('selected');
+  var light = ['#F4F2ED','#FFFFF0','#FFFDD0','#F2A8A8','#A8E6CF','#E8D5B0','#C8B89A','#FAEEDA'];
+  var nb = light.indexOf(s.hex) > -1 ? '#D3D1C7' : 'transparent';
+  document.getElementById('sel-strip').innerHTML =
+    '<div class="sel-dot" style="background:'+s.hex+';border-color:'+nb+'"></div>' +
+    '<div><div class="sel-name">'+s.colour+'</div><div class="sel-meta">'+document.getElementById('fabric-name-sel').value+'</div></div>' +
+    '<span class="sel-badge '+badgeClass[s.type]+'">'+catLabel[s.type]+'</span>';
+  document.getElementById('sv-stock').textContent = s.stock;
+  document.getElementById('sv-free').textContent = s.free;
+  document.getElementById('stock-row').classList.remove('hidden');
+}
+
+function clearSwatchSel() {
+  document.getElementById('sel-strip').innerHTML = '<span style="font-size:12px;color:var(--text-3)">Tap a swatch to select colour</span>';
+  document.getElementById('stock-row').classList.add('hidden');
+}
+
+// ── Request detail drawer ──
+function toggleDrawer(row) {
+  // Close any open drawer first
+  var existing = document.querySelector('.detail-drawer');
+  var wasThisRow = existing && existing.previousElementSibling === row;
+  if (existing) {
+    existing.remove();
+    document.querySelectorAll('#req-tbody tr.open-row').forEach(function(r){ r.classList.remove('open-row'); });
+  }
+  if (wasThisRow) return; // clicking open row again closes it
+
+  row.classList.add('open-row');
+  var d = row.dataset;
+  var colCount = row.cells.length;
+
+  // Image section
+  var imgHtml = d.imgUrl
+    ? '<img class="drawer-img" src="'+d.imgUrl+'" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+      + '<div class="drawer-img-placeholder" style="display:none">👗</div>'
+    : '<div class="drawer-img-placeholder">👗</div>';
+
+  // Product link
+  var linkHtml = d.prodUrl
+    ? '<a class="drawer-link" href="'+d.prodUrl+'" target="_blank" rel="noopener"><i class="ti ti-external-link"></i>'+d.prodUrl+'</a>'
+    : '<span class="drawer-no-link">No product link added</span>';
+
+  // Remarks
+  var remarksHtml = d.remarks
+    ? '<div class="drawer-remarks">'+d.remarks+'</div>'
+    : '<span class="drawer-no-link">No remarks added</span>';
+
+  // Admin remark
+  var adminHtml = d.adminRemark
+    ? '<div class="drawer-admin-remark"><strong>Admin:</strong> '+d.adminRemark+'</div>'
+    : '<span class="drawer-no-link">No admin remarks yet</span>';
+
+  var drawer = document.createElement('tr');
+  drawer.className = 'detail-drawer';
+  drawer.innerHTML =
+    '<td colspan="'+colCount+'">' +
+    '<div class="drawer-inner">' +
+      '<div class="drawer-header">' +
+        '<span class="drawer-title">'+d.fullName+'</span>' +
+        '<button class="drawer-close" onclick="closeDrawer(event)"><i class="ti ti-x"></i> Close</button>' +
+      '</div>' +
+      '<div class="drawer-grid">' +
+        '<div>'+imgHtml+'</div>' +
+        '<div class="drawer-right">' +
+
+          '<div class="drawer-section">' +
+            '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-layout-grid chevron"></i>Details <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+            '<div class="drawer-body">' +
+              '<div class="drawer-meta-grid">' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Collection</div><div class="drawer-meta-val">'+(d.collection||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Category</div><div class="drawer-meta-val">'+(d.category||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Fabric</div><div class="drawer-meta-val">'+(d.fabric||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Colour ID</div><div class="drawer-meta-val" style="display:flex;align-items:center;gap:5px">'+(d.colourHex?'<span style="width:12px;height:12px;border-radius:50%;background:'+d.colourHex+';border:1px solid var(--border-2);flex-shrink:0"></span>':'')+''+(d.colourId||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Status</div><div class="drawer-meta-val">'+row.querySelector('.sb').outerHTML+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Date</div><div class="drawer-meta-val">'+(d.date||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Superimpose</div><div class="drawer-meta-val">'+(d.superimpose ? '<span class="si-badge '+(d.superimpose==='Yes'?'si-yes':'si-no')+'">'+d.superimpose+'</span>' : '<span style="color:var(--text-3)">—</span>')+'</div></div>' +
+                (d.superimpose === 'Yes' ? '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Designer</div><div class="drawer-meta-val">'+(d.designer||'<span style="color:var(--text-3)">—</span>')+'</div></div>' : '') +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="drawer-section">' +
+            '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-link chevron"></i>Product link <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+            '<div class="drawer-body">'+linkHtml+'</div>' +
+          '</div>' +
+
+          '<div class="drawer-section">' +
+            '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-note chevron"></i>Remarks <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+            '<div class="drawer-body">'+remarksHtml+'</div>' +
+          '</div>' +
+
+          '<div class="drawer-section">' +
+            '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-message chevron"></i>Admin remarks <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+            '<div class="drawer-body collapsed">'+adminHtml+'</div>' +
+          '</div>' +
+
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '</td>';
+
+  row.after(drawer);
+}
+
+function toggleSection(titleEl) {
+  var body = titleEl.nextElementSibling;
+  var chevron = titleEl.querySelector('i.ti-chevron-down');
+  var isCollapsed = body.classList.contains('collapsed');
+  body.classList.toggle('collapsed', !isCollapsed);
+  if (chevron) chevron.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(-90deg)';
+}
+
+function closeDrawer(e) {
+  e.stopPropagation();
+  var drawer = e.target.closest('.detail-drawer');
+  if (drawer) {
+    var prev = drawer.previousElementSibling;
+    if (prev) prev.classList.remove('open-row');
+    drawer.remove();
+  }
+}
+function saveDraft() {
+  // Capture current form state
+  var name     = document.getElementById('prod-name').value.trim() || 'Untitled draft';
+  var fabric   = document.getElementById('fabric-name-sel').value;
+  var selects  = document.querySelectorAll('#panel-agent .card select.field-input');
+  var collection = selects[0] ? selects[0].value : '';
+  var category   = selects[1] ? selects[1].value : '';
+  var remarks  = document.getElementById('agent-remarks-input') ? document.getElementById('agent-remarks-input').value : '';
+  var colourId = '';
+  var colourHex = '';
+  var selStrip = document.getElementById('sel-strip');
+  var dotEl = selStrip ? selStrip.querySelector('.sel-dot') : null;
+  var idEl  = selStrip ? selStrip.querySelector('.sel-name') : null;
+  if (dotEl && idEl) { colourHex = dotEl.style.background; colourId = idEl.textContent; }
+
+  // Build table row
+  var tbody = document.getElementById('draft-tbody');
+  var tr = document.createElement('tr');
+  tr.dataset.draftName       = name;
+  tr.dataset.draftCollection = collection;
+  tr.dataset.draftCategory   = category;
+  tr.dataset.draftFabric     = fabric;
+  tr.dataset.draftColour     = colourId;
+  tr.dataset.draftRemarks    = remarks;
+
+  var fabBadge = fabric ? '<span class="fab-badge fb-'+(fabric==='225 Twill'||fabric==='Rib Knit'?'excess':fabric==='Premium Linen'?'mif':'regular')+'">'+fabric+'</span>' : '<span style="color:var(--text-3);font-size:12px">Not selected</span>';
+  var colCell  = colourId && colourHex
+    ? '<div class="colour-id"><div class="colour-id-dot" style="background:'+colourHex+'"></div><span class="colour-id-code">'+colourId+'</span></div>'
+    : '<span style="color:var(--text-3)">—</span>';
+
+  tr.innerHTML =
+    '<td><div class="thumb" style="background:var(--surface-2)">👗</div></td>'+
+    '<td style="font-weight:500">'+name+'</td>'+
+    '<td style="color:var(--text-2);font-size:12px">'+(collection||'—')+'</td>'+
+    '<td><span class="sb s-draft">Draft</span></td>'+
+    '<td>'+fabBadge+'</td>'+
+    '<td>'+colCell+'</td>'+
+    '<td><div class="act-actions">'+
+      '<button class="act-icon-btn review" onclick="loadDraft(this)"><i class="ti ti-edit"></i><span class="tip">Continue editing</span></button>'+
+      '<button class="act-icon-btn" onclick="deleteDraft(this)"><i class="ti ti-trash"></i><span class="tip">Delete</span></button>'+
+    '</div></td>';
+  tbody.prepend(tr);
+
+  var c = document.getElementById('draft-count');
+  c.textContent = parseInt(c.textContent) + 1;
+  openModal('modal-draft-saved');
+}
+
+function loadDraft(btn) {
+  var row = btn.closest('tr');
+  var d = row.dataset;
+
+  // Fill product name
+  document.getElementById('prod-name').value = d.draftName || '';
+
+  // Fill collection dropdown
+  var selects = document.querySelectorAll('#panel-agent .card select.field-input');
+  if (selects[0]) setSelectValue(selects[0], d.draftCollection || '');
+  if (selects[1]) setSelectValue(selects[1], d.draftCategory   || '');
+
+  // Fill remarks
+  var ta = document.getElementById('agent-remarks-input');
+  if (ta) ta.value = d.draftRemarks || '';
+
+  // Fill fabric
+  var fabricSel = document.getElementById('fabric-name-sel');
+  if (d.draftFabric) {
+    setSelectValue(fabricSel, d.draftFabric);
+    onFabricName(fabricSel);
+    // After swatches render, select the matching colour
+    if (d.draftColour) {
+      setTimeout(function() {
+        var swatches = document.querySelectorAll('.swatch-item');
+        swatches.forEach(function(sw) {
+          var nameEl = sw.querySelector('.swatch-name');
+          // match by colour ID stored in sel-name when swatch was last picked,
+          // or by checking fabricSwatches data
+          var fabric = d.draftFabric;
+          var swList = fabricSwatches[fabric] || [];
+          swList.forEach(function(s) {
+            if (s.id === d.draftColour || nameEl.textContent === s.colour) {
+              // find by colour name match
+            }
+          });
+        });
+        // Simpler: iterate fabricSwatches and find swatch by colour ID
+        var swList = fabricSwatches[d.draftFabric] || [];
+        var match = swList.find(function(s){ return s.id === d.draftColour; });
+        if (match) {
+          var items = document.querySelectorAll('.swatch-item');
+          items.forEach(function(item) {
+            var nm = item.querySelector('.swatch-name');
+            if (nm && nm.textContent === match.colour) {
+              selectSwatch(item, match);
+            }
+          });
+        }
+      }, 50);
+    }
+  }
+
+  // Switch to the requests tab and scroll form into view
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(function(t){t.classList.remove('active');});
+  tabBtns[0].classList.add('active');
+  document.getElementById('tab-requests').classList.remove('hidden');
+  document.getElementById('tab-drafts').classList.add('hidden');
+
+  document.getElementById('prod-name').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('prod-name').focus();
+  showToast('"'+(d.draftName||'Draft')+'" loaded into form', 'success');
+}
+
+function setSelectValue(sel, val) {
+  for (var i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === val || sel.options[i].text === val) {
+      sel.selectedIndex = i; return;
+    }
+  }
+}
+
+// ── Validation ──
+function validateAndSubmit() {
+  // Clear previous errors
+  document.querySelectorAll('.field-error').forEach(function(el){ el.classList.remove('field-error'); });
+  removeValidationPopup();
+
+  var missing = [];
+
+  var nameEl = document.getElementById('prod-name');
+  if (!nameEl.value.trim()) { nameEl.closest('.field-group').classList.add('field-error'); missing.push('Product name'); }
+
+  var selects = document.querySelectorAll('#panel-agent .card select.field-input');
+  var collectionEl = selects[0];
+  if (collectionEl && !collectionEl.value) { collectionEl.closest('div').classList.add('field-error'); missing.push('Style / collection'); }
+
+  var categoryEl = selects[1];
+  if (categoryEl && !categoryEl.value) { categoryEl.closest('div').classList.add('field-error'); missing.push('Category'); }
+
+  var fabricEl = document.getElementById('fabric-name-sel');
+  if (!fabricEl.value) { fabricEl.closest('.fabric-name-dropdown').classList.add('field-error'); missing.push('Fabric name'); }
+
+  // Colour — check if swatch is selected
+  var selStrip = document.getElementById('sel-strip');
+  var hasSwatch = selStrip && selStrip.querySelector('.sel-dot');
+  if (!hasSwatch) { document.getElementById('swatch-grid').parentElement.style.outline = '2px solid #E53935'; document.getElementById('swatch-grid').parentElement.style.borderRadius = '8px'; missing.push('Fabric colour'); }
+  else { var sg = document.getElementById('swatch-grid'); if(sg){ sg.parentElement.style.outline=''; } }
+
+  if (missing.length > 0) {
+    showValidationPopup(missing);
+    return;
+  }
+
+  // Adapt confirm modal for edit vs new
+  if (editTargetRow) {
+    document.getElementById('submit-modal-title').textContent = 'Save changes?';
+    document.getElementById('submit-modal-sub').textContent = 'This will update your pending request with the new details.';
+    document.getElementById('submit-modal-info').textContent = 'The original request will be replaced with the updated product details.';
+    document.getElementById('submit-modal-confirm-btn').textContent = 'Confirm & save';
+  } else {
+    document.getElementById('submit-modal-title').textContent = 'Submit request?';
+    document.getElementById('submit-modal-sub').textContent = 'This sends your product request to the admin designer for review. You can track its status in the requests table.';
+    document.getElementById('submit-modal-info').textContent = 'All product details including fabric name, type, and colour ID will be attached to the submission.';
+    document.getElementById('submit-modal-confirm-btn').innerHTML = 'Confirm &amp; submit';
+  }
+
+  // All good — open confirm modal
+  openModal('modal-submit');
+}
+
+function showValidationPopup(fields) {
+  removeValidationPopup();
+  var popup = document.createElement('div');
+  popup.className = 'validation-popup';
+  popup.id = 'validation-popup';
+  popup.innerHTML =
+    '<div class="validation-popup-title"><i class="ti ti-alert-circle"></i>Please fill in the required fields</div>' +
+    '<ul class="validation-popup-list">' +
+      fields.map(function(f){ return '<li>'+f+'</li>'; }).join('') +
+    '</ul>';
+  document.body.appendChild(popup);
+  setTimeout(removeValidationPopup, 4000);
+}
+
+function removeValidationPopup() {
+  var el = document.getElementById('validation-popup');
+  if (el) el.remove();
+}
+
+function confirmSubmit() {
+  // Gather form values
+  var name       = document.getElementById('prod-name').value.trim();
+  var imgUrl     = document.getElementById('img-url').value.trim();
+  var selects    = document.querySelectorAll('#panel-agent .card select.field-input');
+  var collection = selects[0] ? selects[0].value || '—' : '—';
+  var fabric     = document.getElementById('fabric-name-sel').value;
+  var remarks    = document.getElementById('agent-remarks-input') ? document.getElementById('agent-remarks-input').value : '';
+  var superimpose = document.getElementById('superimpose-sel') ? document.getElementById('superimpose-sel').value : '';
+  var designer    = document.getElementById('designer-sel') ? document.getElementById('designer-sel').value : '';
+
+  // Colour info from sel-strip
+  var selStrip   = document.getElementById('sel-strip');
+  var dotEl      = selStrip ? selStrip.querySelector('.sel-dot') : null;
+  var nameEl     = selStrip ? selStrip.querySelector('.sel-name') : null;
+  var badgeEl    = selStrip ? selStrip.querySelector('.sel-badge') : null;
+  var colourHex  = dotEl  ? dotEl.style.background  : '';
+  var colourName = nameEl ? nameEl.textContent       : '';
+  var fabType    = badgeEl ? (function(t){ return t==='new fabric'?'new':t; })(badgeEl.textContent.toLowerCase()) : 'regular';
+
+  var colourId = '';
+  if (fabric && colourName) {
+    var swList = fabricSwatches[fabric] || [];
+    var match = swList.find(function(s){ return s.colour === colourName; });
+    if (match) colourId = match.id;
+  }
+
+  var thumbClassStr = 'thumb ' + (thumbClass[fabType] || 'thumb-regular');
+  var imgCell = imgUrl
+    ? '<img src="'+imgUrl+'" class="thumb" style="object-fit:cover;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="'+thumbClassStr+'" style="display:none">👗</div>'
+    : '<div class="'+thumbClassStr+'">👗</div>';
+
+  var fabCellClass = fbClass[fabType] || 'fb-regular';
+  var fabCell = fabric ? '<span class="fab-badge '+fabCellClass+'">'+catLabel[fabType]+'</span>' : '<span style="color:var(--text-3)">—</span>';
+  var colourCell = colourId && colourHex
+    ? '<div class="colour-id"><div class="colour-id-dot" style="background:'+colourHex+'"></div><span class="colour-id-code">'+colourId+'</span></div>'
+    : '<span style="color:var(--text-3)">—</span>';
+
+  var today = new Date();
+  var dateStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+
+  // ── EDIT MODE: update the existing row ──
+  if (editTargetRow) {
+    var tr = editTargetRow;
+    tr.dataset.fullName   = name;
+    tr.dataset.name       = name.toLowerCase();
+    tr.dataset.collection = collection;
+    tr.dataset.category   = selects[1] ? selects[1].value || '—' : '—';
+    tr.dataset.fabric     = fabric;
+    tr.dataset.colourId   = colourId;
+    tr.dataset.colourHex  = colourHex;
+    tr.dataset.colourName = colourName;
+    tr.dataset.imgUrl     = imgUrl;
+    tr.dataset.prodUrl    = document.getElementById('prod-url').value.trim();
+    tr.dataset.remarks    = remarks;
+    tr.dataset.superimpose = document.getElementById('superimpose-sel') ? document.getElementById('superimpose-sel').value : '';
+    tr.dataset.date       = dateStr;
+
+    var cells = tr.querySelectorAll('td');
+    if (cells[0]) cells[0].innerHTML = imgCell;
+    if (cells[1]) { cells[1].textContent = name; }
+    if (cells[2]) { cells[2].textContent = collection; }
+    // cells[3]=status, cells[4]=fabric, cells[5]=colour, cells[6]=superimpose, cells[7]=admin note, cells[8]=edit btn
+    if (cells[4]) cells[4].innerHTML = fabCell;
+    if (cells[5]) cells[5].innerHTML = colourCell;
+    var siValEdit = tr.dataset.superimpose;
+    if (cells[6]) cells[6].innerHTML = siValEdit ? '<span class="si-badge '+(siValEdit==='Yes'?'si-yes':'si-no')+'">'+siValEdit+'</span>' : '<span style="color:var(--text-3)">—</span>';
+
+    tr.style.animation = 'row-in .3s ease';
+    editTargetRow = null;
+
+    closeModal('modal-submit');
+    document.getElementById('edit-mode-banner').style.display = 'none';
+    document.getElementById('submit-btn-icon').className = 'ti ti-send';
+    document.getElementById('submit-btn-label').textContent = 'Submit new request';
+    resetForm();
+    showToast('"'+name+'" updated successfully', 'success');
+    return;
+  }
+
+  // ── NEW SUBMISSION ──
+  var tr = document.createElement('tr');
+  tr.className = 'data-row';
+  tr.dataset.status      = 'pending';
+  tr.dataset.name        = name.toLowerCase();
+  tr.dataset.date        = dateStr;
+  tr.dataset.fullName    = name;
+  tr.dataset.collection  = collection;
+  tr.dataset.category    = selects[1] ? selects[1].value || '—' : '—';
+  tr.dataset.fabric      = fabric;
+  tr.dataset.colourId    = colourId;
+  tr.dataset.colourHex   = colourHex;
+  tr.dataset.colourName  = colourName;
+  tr.dataset.imgUrl      = imgUrl;
+  tr.dataset.prodUrl     = document.getElementById('prod-url').value.trim();
+  tr.dataset.remarks     = remarks;
+  tr.dataset.superimpose = superimpose;
+  tr.dataset.designer    = designer;
+  tr.dataset.adminRemark = '';
+  tr.setAttribute('onclick', 'toggleDrawer(this)');
+  tr.style.animation = 'row-in .3s ease';
+  var siCell = superimpose ? '<span class="si-badge '+(superimpose==='Yes'?'si-yes':'si-no')+'">'+superimpose+'</span>' : '<span style="color:var(--text-3)">—</span>';
+  var designerCell = designer ? '<span style="font-size:12px">'+designer+'</span>' : '<span style="color:var(--text-3)">—</span>';
+  tr.innerHTML =
+    '<td>'+imgCell+'</td>'+
+    '<td>'+name+'</td>'+
+    '<td>'+collection+'</td>'+
+    '<td><span class="sb s-pending">Pending</span></td>'+
+    '<td>'+fabCell+'</td>'+
+    '<td>'+colourCell+'</td>'+
+    '<td>'+siCell+'</td>'+
+    '<td>'+designerCell+'</td>'+
+    '<td><span style="color:var(--text-3)">—</span></td>'+
+    '<td><button class="pending-edit-btn" onclick="event.stopPropagation();openEditModal(this.closest(\'tr\'))"><i class="ti ti-edit"></i> Edit</button></td>';
+
+  document.getElementById('req-tbody').prepend(tr);
+  rebuildTable();
+
+  // ── Also add to admin panel ──
+  var thumbClassA = thumbClass[fabType] || 'thumb-regular';
+  var agentName = 'You';
+  var adminTr = document.createElement('tr');
+  adminTr.className = 'data-row';
+  adminTr.dataset.astatus     = 'pending';
+  adminTr.dataset.aname       = name.toLowerCase();
+  adminTr.dataset.afullName   = name;
+  adminTr.dataset.acollection = collection;
+  adminTr.dataset.acategory   = selects[1] ? selects[1].value || '—' : '—';
+  adminTr.dataset.afabric     = fabType === 'excess' ? 'Excess' : fabType === 'mif' ? 'MIF' : fabType === 'new' ? 'New Fabric' : 'Regular';
+  adminTr.dataset.acolourId   = colourId;
+  adminTr.dataset.acolourHex  = colourHex;
+  adminTr.dataset.acolourName = colourName;
+  adminTr.dataset.aagent      = agentName;
+  adminTr.dataset.aremarks    = remarks;
+  adminTr.dataset.aadminRemark = '';
+  adminTr.dataset.aimgUrl     = imgUrl;
+  adminTr.dataset.aprodUrl    = document.getElementById('prod-url').value.trim();
+  adminTr.dataset.asuperimpose = superimpose;
+  adminTr.dataset.adesigner   = designer;
+  adminTr.setAttribute('onclick', 'toggleAdminDrawer(this)');
+  adminTr.style.animation = 'row-in .3s ease';
+  // Store back-reference so admin action can find the agent row
+  var rowKey = 'row-' + Date.now();
+  tr.dataset.rowKey = rowKey;
+  adminTr.dataset.rowKey = rowKey;
+  adminTr.innerHTML =
+    '<td><div class="thumb '+thumbClassA+'" style="font-size:20px">'+
+      (imgUrl ? '<img src="'+imgUrl+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">' : '👗')+
+    '</div></td>'+
+    '<td>'+name+'</td>'+
+    '<td>'+collection+'</td>'+
+    '<td>'+fabCell+'</td>'+
+    '<td>'+agentName+'</td>'+
+    '<td onclick="event.stopPropagation()"><div class="act-actions">'+
+      '<button class="act-icon-btn approve" onclick="inlineApprove(this)"><i class="ti ti-circle-check"></i><span class="tip">Approve</span></button>'+
+      '<button class="act-icon-btn hold" onclick="adminAction(this,\'hold\',\'\')"><i class="ti ti-ban"></i><span class="tip">Put on hold</span></button>'+
+    '</div></td>';
+  document.getElementById('admin-tbody').prepend(adminTr);
+  adminCounts.pending++;
+  updateCounts();
+
+  closeModal('modal-submit');
+  resetForm();
+  showToast('"'+name+'" submitted for review', 'success');
+}
+
+function resetForm() {
+  document.getElementById('prod-name').value = '';
+  document.getElementById('prod-url').value = '';
+  var prodClr = document.getElementById('prod-url-clear');
+  if (prodClr) prodClr.style.display = 'none';
+  removeImage();
+  var selAll = document.querySelectorAll('#panel-agent .card select.field-input');
+  selAll.forEach(function(s){ s.selectedIndex = 0; });
+  var df = document.getElementById('designer-field');
+  if (df) df.style.display = 'none';
+  var ta = document.getElementById('agent-remarks-input');
+  if (ta) ta.value = '';
+  document.getElementById('fabric-name-sel').selectedIndex = 0;
+  document.getElementById('fabric-detail').classList.add('hidden');
+  clearSwatchSel();
+  document.querySelectorAll('.field-error').forEach(function(el){ el.classList.remove('field-error'); });
+  var sg = document.getElementById('swatch-grid');
+  if (sg) { sg.parentElement.style.outline=''; }
+}
+
+// ── Superimpose ──
+function onSuperimposeChange(val) {
+  var field = document.getElementById('designer-field');
+  if (field) field.style.display = val === 'Yes' ? 'block' : 'none';
+  if (val !== 'Yes') { var sel = document.getElementById('designer-sel'); if (sel) sel.value = ''; }
+}
+
+
+var searchVal = '';
+
+function filterStatus(status, btn) {
+  curFilter = status; curPage = 1;
+  document.querySelectorAll('.agent-filter-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  rebuildTable();
+}
+function filterSearch(v) {
+  searchVal = v.toLowerCase(); curPage = 1;
+  rebuildTable();
+}
+
+function rebuildTable() {
+  var rows = Array.from(document.querySelectorAll('#req-tbody tr'));
+  // First pass: mark visibility
+  rows.forEach(function(tr) {
+    var statusOk = curFilter === 'all'
+      ? true
+      : curFilter === 'superimpose'
+      ? tr.dataset.superimpose === 'Yes'
+      : tr.dataset.status === curFilter;
+    var searchOk = !searchVal || tr.dataset.name.includes(searchVal);
+    var dateOk   = !tr.classList.contains('date-hidden');
+    tr._visible  = statusOk && searchOk && dateOk;
+  });
+  var vis = rows.filter(function(tr){ return tr._visible; });
+  var total = vis.length;
+  var tp = Math.max(1, Math.ceil(total / perPage));
+  if (curPage > tp) curPage = tp;
+  // Second pass: show/hide
+  rows.forEach(function(tr){ tr.style.display = 'none'; });
+  vis.slice((curPage-1)*perPage, curPage*perPage).forEach(function(tr){ tr.style.display = ''; });
+  document.getElementById('row-count').textContent = '• ' + total + ' result' + (total !== 1 ? 's' : '');
+  document.getElementById('pg1').classList.toggle('active', curPage === 1);
+  document.getElementById('pg2').classList.toggle('active', curPage === 2);
+  document.getElementById('pg2').style.display = tp > 1 ? '' : 'none';
+}
+
+function applyFilters() { rebuildTable(); }
+function applyPagination() { rebuildTable(); }
+function changePerPage(v) { perPage = parseInt(v); curPage = 1; rebuildTable(); }
+function changePage(d) { var rows=Array.from(document.querySelectorAll('#req-tbody tr')).filter(function(tr){return tr._visible;}); var tp=Math.max(1,Math.ceil(rows.length/perPage)); curPage=Math.max(1,Math.min(tp,curPage+d)); rebuildTable(); }
+function goPage(p) { curPage = p; rebuildTable(); }
+
+// ── Tabs ──
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('tab-requests').classList.toggle('hidden', tab !== 'requests');
+  document.getElementById('tab-drafts').classList.toggle('hidden', tab !== 'drafts');
+}
+
+// ── Admin ──
+function filterAdmin(v) {
+  document.querySelectorAll('#admin-tbody tr').forEach(function(tr) {
+    tr.style.display = tr.dataset.aname.includes(v.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function filterAdminStatus(status, btn) {
+  document.querySelectorAll('#panel-admin .filter-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  document.querySelectorAll('#admin-tbody tr.data-row').forEach(function(tr) {
+    var show = status === 'all' ? true
+      : status === 'superimpose' ? tr.dataset.asuperimpose === 'Yes'
+      : tr.dataset.astatus === status;
+    tr.style.display = show ? '' : 'none';
+    var next = tr.nextElementSibling;
+    if (next && next.classList.contains('admin-detail-drawer')) next.style.display = tr.style.display;
+  });
+}
+
+function toggleAdminAll(cb) { document.querySelectorAll('.admin-cb').forEach(function(c){c.checked = cb.checked;}); }
+
+// ── Admin drawer ──
+function toggleAdminDrawer(row) {
+  var existing = document.querySelector('.admin-detail-drawer');
+  var wasThisRow = existing && existing.previousElementSibling === row;
+  if (existing) {
+    existing.remove();
+    document.querySelectorAll('#admin-tbody tr.open-row').forEach(function(r){ r.classList.remove('open-row'); });
+  }
+  if (wasThisRow) return;
+
+  row.classList.add('open-row');
+  var d = row.dataset;
+  var colCount = row.cells.length;
+
+  var statusLabel = d.astatus === 'approved'
+    ? '<span class="sb s-approved">Approved</span>'
+    : d.astatus === 'onhold'
+    ? '<span class="sb s-onhold">On hold</span>'
+    : '<span class="sb s-pending">Pending</span>';
+
+  var _ft = d.afabric === 'Excess' ? 'excess' : d.afabric === 'MIF' ? 'mif' : d.afabric === 'New Fabric' ? 'new' : 'regular';
+  var fabricClass = {excess:'fb-excess',mif:'fb-mif',new:'fb-new',regular:'fb-regular'}[_ft];
+  var _thumbClass = {excess:'thumb-excess',mif:'thumb-mif',new:'thumb-new',regular:'thumb-regular'}[_ft];
+
+  var colourDot = d.acolourHex
+    ? '<span style="width:12px;height:12px;border-radius:50%;background:'+d.acolourHex+';border:1px solid var(--border-2);flex-shrink:0;display:inline-block"></span> '
+    : '';
+
+  var agentRemarkHtml = d.aremarks
+    ? '<div class="drawer-remarks">'+d.aremarks+'</div>'
+    : '<span class="drawer-no-link">No remarks from agent</span>';
+
+  var existingAdminRemark = d.aadminRemark || '';
+  var isActioned = d.astatus === 'approved' || d.astatus === 'onhold';
+
+  var actionButtons = isActioned
+    ? '<div style="font-size:12px;color:var(--text-2);padding:8px 0">Status already set: '+statusLabel+'</div>'
+    : '<div class="drawer-action-row">' +
+        '<button class="drawer-action-btn drawer-action-approve" onclick="openApprovalModal(this)"><i class="ti ti-circle-check"></i> Approve</button>' +
+        '<button class="drawer-action-btn drawer-action-hold" onclick="drawerAdminAction(this,\'hold\')"><i class="ti ti-ban"></i> Put on hold</button>' +
+      '</div>';
+
+  var drawer = document.createElement('tr');
+  drawer.className = 'admin-detail-drawer detail-drawer';
+  drawer.innerHTML =
+    '<td colspan="'+colCount+'">' +
+    '<div class="drawer-inner">' +
+      '<div class="drawer-header">' +
+        '<span class="drawer-title">'+d.afullName+'</span>' +
+        '<button class="drawer-close" onclick="closeAdminDrawer(event)"><i class="ti ti-x"></i> Close</button>' +
+      '</div>' +
+      '<div class="drawer-grid">' +
+        '<div>' +
+          (d.aimgUrl
+            ? '<img src="'+d.aimgUrl+'" class="drawer-img" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+              '<div class="drawer-img-placeholder" style="display:none">👗</div>'
+            : '<div class="drawer-img-placeholder">👗</div>'
+          ) +
+        '</div>' +
+        '<div class="drawer-right">' +
+
+          '<div class="drawer-section">' +
+            '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-layout-grid chevron"></i>Details <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+            '<div class="drawer-body">' +
+              '<div class="drawer-meta-grid">' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Collection</div><div class="drawer-meta-val">'+(d.acollection||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Category</div><div class="drawer-meta-val">'+(d.acategory||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Fabric type</div><div class="drawer-meta-val"><span class="fab-badge '+fabricClass+'">'+d.afabric+'</span></div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Colour ID</div><div class="drawer-meta-val" style="display:flex;align-items:center;gap:5px">'+colourDot+(d.acolourId||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Agent</div><div class="drawer-meta-val">'+(d.aagent||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Status</div><div class="drawer-meta-val">'+statusLabel+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Superimpose</div><div class="drawer-meta-val">'+(d.asuperimpose ? '<span class="si-badge '+(d.asuperimpose==='Yes'?'si-yes':'si-no')+'">'+d.asuperimpose+'</span>' : '<span style="color:var(--text-3)">—</span>')+'</div></div>' +
+                (d.asuperimpose === 'Yes' ? '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Designer</div><div class="drawer-meta-val">'+(d.adesigner||'<span style="color:var(--text-3)">—</span>')+'</div></div>' : '') +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          (function() {
+            var prodLinkHtml = d.aprodUrl
+              ? '<a class="drawer-link" href="'+d.aprodUrl+'" target="_blank" rel="noopener"><i class="ti ti-external-link"></i>'+d.aprodUrl+'</a>'
+              : '<span class="drawer-no-link">No product link added</span>';
+            return '<div class="drawer-section">' +
+              '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-link chevron"></i>Product link <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+              '<div class="drawer-body">'+prodLinkHtml+'</div>' +
+            '</div>';
+          })() +
+
+          '<div class="drawer-section">' +
+            '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-note chevron"></i>Agent remarks <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+            '<div class="drawer-body">'+agentRemarkHtml+'</div>' +
+          '</div>' +
+
+          '<div class="drawer-section">' +
+            '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-message-2 chevron"></i>Admin remarks &amp; action <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+            '<div class="drawer-body">' +
+              '<textarea class="drawer-remark-input" id="admin-remark-'+row.rowIndex+'" placeholder="Add a remark before approving or putting on hold...">'+existingAdminRemark+'</textarea>' +
+              actionButtons +
+            '</div>' +
+          '</div>' +
+
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '</td>';
+
+  row.after(drawer);
+}
+
+function closeAdminDrawer(e) {
+  e.stopPropagation();
+  var drawer = e.target.closest('.admin-detail-drawer');
+  if (drawer) {
+    var prev = drawer.previousElementSibling;
+    if (prev) prev.classList.remove('open-row');
+    drawer.remove();
+  }
+}
+
+// ── Approval details modal ──
+var _approvalRow = null;
+var _approvalDrawer = null;
+var _approvalRemark = '';
+
+function inlineApprove(btn) {
+  // Open the drawer first, then trigger the approval modal from it
+  var row = btn.closest('tr');
+  // If no drawer open for this row, open it
+  var existing = document.querySelector('.admin-detail-drawer');
+  if (existing && existing.previousElementSibling === row) {
+    // drawer already open — find the approve btn inside it
+    var drawerApproveBtn = existing.querySelector('.drawer-action-approve');
+    if (drawerApproveBtn) { openApprovalModal(drawerApproveBtn); return; }
+  }
+  // Open drawer then trigger modal
+  toggleAdminDrawer(row);
+  setTimeout(function() {
+    var drawer = document.querySelector('.admin-detail-drawer');
+    if (drawer) {
+      var approveBtn = drawer.querySelector('.drawer-action-approve');
+      if (approveBtn) openApprovalModal(approveBtn);
+    }
+  }, 50);
+}
+
+
+function openApprovalModal(btn) {
+  var drawer = btn.closest('.admin-detail-drawer');
+  var row = drawer.previousElementSibling;
+  _approvalRow = row;
+  _approvalDrawer = drawer;
+  var d = row.dataset;
+
+  // Product image
+  var apvImg = document.getElementById('apv-img');
+  var apvPlaceholder = document.getElementById('apv-img-placeholder');
+  if (d.aimgUrl) {
+    apvImg.src = d.aimgUrl;
+    apvImg.style.display = 'block';
+    apvPlaceholder.style.display = 'none';
+    apvImg.onerror = function() { apvImg.style.display = 'none'; apvPlaceholder.style.display = 'block'; };
+  } else {
+    apvImg.src = '';
+    apvImg.style.display = 'none';
+    apvPlaceholder.style.display = 'block';
+  }
+
+  // Pre-fill read-only product info
+  document.getElementById('apv-title').textContent = 'Approving — ' + (d.afullName || 'Request');
+  document.getElementById('apv-sub').textContent = 'Review and add production details before confirming.';
+  document.getElementById('apv-prod-name').textContent = d.afullName || '—';
+  document.getElementById('apv-agent').textContent = d.aagent || '—';
+  document.getElementById('apv-category').textContent = d.acategory || '—';
+  document.getElementById('apv-collection').textContent = d.acollection || '—';
+  document.getElementById('apv-agent-remarks').textContent = d.aremarks || 'No remarks from agent';
+
+  // Product link
+  var linkEl = document.getElementById('apv-prod-link');
+  linkEl.innerHTML = d.aprodUrl
+    ? '<a href="'+d.aprodUrl+'" target="_blank" rel="noopener" style="color:var(--pending-text);font-size:12px;word-break:break-all">'+d.aprodUrl+'</a>'
+    : '<span style="color:var(--text-3);font-size:12px">No link provided</span>';
+
+  // Fabric
+  var fabricName = d.afabric || '';
+  document.getElementById('apv-fabric-name').textContent = fabricName || '—';
+  var colHex = d.acolourHex || '';
+  var colName = d.acolourName || d.acolourId || '—';
+  document.getElementById('apv-colour-dot').style.background = colHex || 'var(--surface-3)';
+  document.getElementById('apv-colour-name').textContent = colName;
+
+  var fabType = fabricName === 'Excess' ? 'excess' : fabricName === 'MIF' ? 'mif' : fabricName === 'New Fabric' ? 'new' : 'regular';
+  var fbCls = {excess:'fb-excess',mif:'fb-mif',new:'fb-new',regular:'fb-regular'};
+  var fbLbl = {excess:'Excess',mif:'MIF',new:'New Fabric',regular:'Regular'};
+  var badge = document.getElementById('apv-fabric-badge');
+  badge.innerHTML = fabricName ? '<span class="fab-badge '+fbCls[fabType]+'">'+fbLbl[fabType]+'</span>' : '';
+
+  // Reset editable fields
+  document.getElementById('apv-pattern').value = '';
+  document.getElementById('apv-proc-remarks').value = _approvalRemark;
+  document.getElementById('apv-samp-remarks').value = '';
+  document.getElementById('apv-fabric-used').value = '';
+  document.getElementById('apv-est-consumption').value = '';
+  document.getElementById('apv-input-stage').value = 'Cutting';
+  document.getElementById('acc-name-input').value = '';
+  document.getElementById('acc-consumption-input').value = '';
+  document.getElementById('acc-tags-row').innerHTML = '<span style="font-size:12px;color:var(--text-3)">No accessories added yet</span>';
+  document.getElementById('apv-extra-notes').value = '';
+
+  document.getElementById('approval-modal-overlay').classList.remove('hidden');
+}
+
+function addAccessory() {
+  var name = document.getElementById('acc-name-input').value.trim();
+  var cons = document.getElementById('acc-consumption-input').value.trim();
+  var stage = document.getElementById('acc-stage-input').value;
+  if (!name) { document.getElementById('acc-name-input').focus(); return; }
+  var label = name + (cons ? ' ('+cons+')' : '') + ' — ' + stage;
+  var row = document.getElementById('acc-tags-row');
+  // Remove placeholder if present
+  var placeholder = row.querySelector('span');
+  if (placeholder && placeholder.style.color) placeholder.remove();
+  var tag = document.createElement('span');
+  tag.className = 'acc-tag';
+  tag.innerHTML = label + '<button onclick="this.parentElement.remove()" title="Remove">×</button>';
+  row.appendChild(tag);
+  document.getElementById('acc-name-input').value = '';
+  document.getElementById('acc-consumption-input').value = '';
+}
+
+function closeApprovalModal() {
+  document.getElementById('approval-modal-overlay').classList.add('hidden');
+  _approvalRow = null;
+  _approvalDrawer = null;
+}
+
+function confirmApproval() {
+  if (!_approvalRow) return;
+  var row = _approvalRow;
+  var drawer = _approvalDrawer;
+  var remark = document.getElementById('apv-proc-remarks').value.trim();
+
+  row.dataset.aadminRemark = remark;
+  row.dataset.astatus = 'approved';
+  adminCounts.approved++;
+  adminCounts.pending = Math.max(0, adminCounts.pending - 1);
+  updateCounts();
+
+  if (drawer) {
+    var prev = drawer.previousElementSibling;
+    if (prev) prev.classList.remove('open-row');
+    drawer.remove();
+  }
+
+  closeApprovalModal();
+  syncToAgentRow(row.dataset.rowKey || row.dataset.aname, 'approved', remark, row.dataset.afullName);
+  var name = row.dataset.afullName || row.dataset.aname || '';
+  showToast('"' + name + '" approved', 'success');
+}
+
+
+function drawerAdminAction(btn, type) {
+  var drawer = btn.closest('.admin-detail-drawer');
+  var row = drawer.previousElementSibling;
+  var textareaId = 'admin-remark-' + row.rowIndex;
+  var remark = document.getElementById(textareaId) ? document.getElementById(textareaId).value.trim() : '';
+  row.dataset.aadminRemark = remark;
+
+  row.classList.add('fade-out');
+  setTimeout(function() {
+    var newStatus = type === 'approve' ? 'approved' : 'onhold';
+    row.dataset.astatus = newStatus;
+    if (type === 'approve') { adminCounts.approved++; adminCounts.pending = Math.max(0, adminCounts.pending-1); }
+    else { adminCounts.hold++; adminCounts.pending = Math.max(0, adminCounts.pending-1); }
+    updateCounts();
+    row.classList.remove('fade-out');
+    drawer.remove();
+    row.classList.remove('open-row');
+
+    // ── Sync to agent panel ──
+    syncToAgentRow(row.dataset.rowKey || row.dataset.aname, newStatus, remark, row.dataset.afullName);
+
+    var name = row.dataset.aname || '';
+    showToast(name.charAt(0).toUpperCase()+name.slice(1) + (type==='approve' ? ' approved' : ' put on hold'), type==='approve'?'success':'hold');
+  }, 350);
+}
+
+function adminAction(btn, type, remark) {
+  var row = btn.closest('tr'), name = row.dataset.aname;
+  row.classList.add('fade-out');
+  setTimeout(function() {
+    var newStatus = type === 'approve' ? 'approved' : 'onhold';
+    row.dataset.astatus = newStatus;
+    if (type === 'approve') { adminCounts.approved++; adminCounts.pending = Math.max(0, adminCounts.pending-1); }
+    else { adminCounts.hold++; adminCounts.pending = Math.max(0, adminCounts.pending-1); }
+    updateCounts();
+    row.classList.remove('fade-out');
+
+    // ── Sync to agent panel ──
+    syncToAgentRow(row.dataset.rowKey || row.dataset.aname, newStatus, remark || '', row.dataset.afullName);
+
+    showToast(name.charAt(0).toUpperCase()+name.slice(1) + (type==='approve'?' approved':' put on hold'), type==='approve'?'success':'hold');
+  }, 350);
+}
+
+function bulkApprove() {
+  var checked = document.querySelectorAll('.admin-cb:checked');
+  if (!checked.length) { showToast('Select at least one item first', 'hold'); return; }
+  var n = checked.length;
+  checked.forEach(function(cb) {
+    var row = cb.closest('tr'); row.dataset.astatus = 'approved';
+    row.classList.add('fade-out'); setTimeout(function(){row.classList.remove('fade-out');}, 350);
+    adminCounts.approved++; adminCounts.pending = Math.max(0, adminCounts.pending-1);
+  });
+  updateCounts(); showToast(n+' product'+(n>1?'s':'')+' approved', 'success');
+  document.getElementById('admin-cb-all').checked = false;
+}
+
+// ── Sync admin action → agent panel row ──
+function syncToAgentRow(key, newStatus, remark, fullName) {
+  // Try match by rowKey first, fall back to name match
+  var agentRows = document.querySelectorAll('#req-tbody tr.data-row');
+  var agentRow = null;
+  agentRows.forEach(function(r) {
+    if (r.dataset.rowKey && r.dataset.rowKey === key) agentRow = r;
+  });
+  if (!agentRow && fullName) {
+    agentRows.forEach(function(r) {
+      if (r.dataset.fullName && r.dataset.fullName.toLowerCase() === (fullName||'').toLowerCase()) agentRow = r;
+    });
+  }
+  if (!agentRow) return;
+
+  // Update status
+  agentRow.dataset.status      = newStatus;
+  agentRow.dataset.adminRemark = remark;
+
+  // Update status badge cell (index 3)
+  var statusBadge = agentRow.cells[3];
+  if (statusBadge) {
+    if (newStatus === 'approved') statusBadge.innerHTML = '<span class="sb s-approved">Approved</span>';
+    else if (newStatus === 'onhold') statusBadge.innerHTML = '<span class="sb s-onhold">On hold</span>';
+  }
+
+  // Update admin note cell (index 6) and hide edit button (index 7)
+  var noteCell = agentRow.cells[6];
+  if (noteCell) {
+    if (remark) {
+      noteCell.innerHTML = '<button class="remarks-btn" onclick="event.stopPropagation();openRemarks(\''+remark.replace(/'/g,"\\'")+'\')" ><i class="ti ti-message" style="font-size:11px"></i> View</button>';
+    } else if (newStatus === 'approved') {
+      noteCell.innerHTML = '<span class="sb s-approved" style="font-size:10px">Approved</span>';
+    } else {
+      noteCell.innerHTML = '<span class="sb s-onhold" style="font-size:10px">On hold</span>';
+    }
+  }
+
+  // Remove edit button — can't edit once actioned
+  var editCell = agentRow.cells[7];
+  if (editCell) editCell.innerHTML = '';
+
+  // Animate the row
+  agentRow.style.animation = 'none';
+  agentRow.offsetHeight;
+  agentRow.style.animation = 'row-in .4s ease';
+
+  // Rebuild agent table so filters reflect new status
+  rebuildTable();
+}
+
+function updateCounts() {
+  document.getElementById('cnt-pending').textContent = adminCounts.pending;
+  document.getElementById('cnt-approved').textContent = adminCounts.approved;
+  document.getElementById('cnt-hold').textContent = adminCounts.hold;
+}
+
+// ── Drafts ──
+function deleteDraft(btn) {
+  var row = btn.closest('tr'); row.classList.add('fade-out');
+  setTimeout(function() {
+    row.remove();
+    var cnt = document.getElementById('draft-count');
+    cnt.textContent = Math.max(0, parseInt(cnt.textContent) - 1);
+    showToast('Draft deleted', 'hold');
+  }, 350);
+}
+
+// ── Modals ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openRemarks(text) { document.getElementById('remarks-text').textContent = text; openModal('modal-remarks'); }
+
+document.querySelectorAll('.modal-overlay').forEach(function(el) {
+  el.addEventListener('click', function(e) { if (e.target === el) closeModal(el.id); });
+});
+
+// ── Calendar ──
+var calOpen=false, calView='day', calYear=2026, calMonth=4;
+var selDay=null, selMon=null, selYr=null;
+var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var MS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+function toggleCal(e) {
+  e.stopPropagation(); calOpen = !calOpen;
+  document.getElementById('cal-popup').classList.toggle('open', calOpen);
+  document.getElementById('cal-chev').style.transform = calOpen ? 'rotate(180deg)' : '';
+  if (calOpen) renderCal();
+}
+function closeCal() {
+  calOpen = false;
+  document.getElementById('cal-popup').classList.remove('open');
+  document.getElementById('cal-chev').style.transform = '';
+}
+document.addEventListener('click', function(e) { if (!document.getElementById('cal-wrap').contains(e.target)) closeCal(); });
+
+function setView(v, e) {
+  if (e) e.stopPropagation(); calView = v;
+  ['day','month','year'].forEach(function(t){ document.getElementById('vt-'+t).classList.toggle('active', t===v); });
+  renderCal();
+}
+
+function renderCal() {
+  var body = document.getElementById('cal-body'), h = document.getElementById('cal-heading'); body.innerHTML = '';
+  if (calView === 'day') {
+    h.textContent = MONTHS[calMonth]+' '+calYear; h.title = 'Tap to see months';
+    var dlRow = document.createElement('div'); dlRow.className = 'cal-grid-7'; dlRow.style.marginBottom = '4px';
+    DAYS.forEach(function(d){ var s=document.createElement('div'); s.className='cal-day-lbl'; s.textContent=d; dlRow.appendChild(s); }); body.appendChild(dlRow);
+    var g = document.createElement('div'); g.className = 'cal-grid-7';
+    var first=new Date(calYear,calMonth,1).getDay(), dim=new Date(calYear,calMonth+1,0).getDate(), pd=new Date(calYear,calMonth,0).getDate(), today=new Date();
+    for(var i=0;i<first;i++){var b=document.createElement('button');b.className='cal-cell other-m';b.textContent=pd-first+1+i;g.appendChild(b);}
+    for(var d=1;d<=dim;d++){(function(day){
+      var b=document.createElement('button');b.className='cal-cell';b.textContent=day;
+      var ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+      if(today.getFullYear()===calYear&&today.getMonth()===calMonth&&today.getDate()===day)b.classList.add('today');
+      if(selDay===ds)b.classList.add('selected');
+      b.onclick=function(e){e.stopPropagation();selDay=ds;selMon=null;selYr=null;document.getElementById('cal-label').textContent=day+' '+MS[calMonth]+' '+calYear;document.getElementById('cal-btn').classList.add('active-filter');applyDateFilter();closeCal();};
+      g.appendChild(b);
+    })(d);}
+    var tot=first+dim,rem=(7-tot%7)%7;for(var n=1;n<=rem;n++){var b=document.createElement('button');b.className='cal-cell other-m';b.textContent=n;g.appendChild(b);}
+    body.appendChild(g);
+  } else if (calView === 'month') {
+    h.textContent = String(calYear); h.title = 'Tap to see years';
+    var g=document.createElement('div');g.className='cal-grid-4';
+    MS.forEach(function(m,i){var b=document.createElement('button');b.className='cal-cell';b.textContent=m;if(selMon===i&&selYr===calYear)b.classList.add('selected');b.onclick=function(e){e.stopPropagation();selMon=i;selYr=calYear;selDay=null;document.getElementById('cal-label').textContent=m+' '+calYear;document.getElementById('cal-btn').classList.add('active-filter');applyDateFilter();closeCal();};g.appendChild(b);});
+    body.appendChild(g);
+  } else {
+    var sy=Math.floor(calYear/12)*12;h.textContent=sy+' – '+(sy+11);h.title='';
+    var g=document.createElement('div');g.className='cal-grid-3';
+    for(var y=sy;y<sy+12;y++){(function(yr){var b=document.createElement('button');b.className='cal-cell';b.textContent=yr;if(selYr===yr&&selMon===null&&selDay===null)b.classList.add('selected');b.onclick=function(e){e.stopPropagation();selYr=yr;selMon=null;selDay=null;document.getElementById('cal-label').textContent=String(yr);document.getElementById('cal-btn').classList.add('active-filter');applyDateFilter();closeCal();};g.appendChild(b);})(y);}
+    body.appendChild(g);
+  }
+  var lbl=document.getElementById('cal-status');
+  if(selDay)lbl.textContent='Showing: '+document.getElementById('cal-label').textContent;
+  else if(selMon!==null)lbl.textContent='Showing: '+MS[selMon]+' '+selYr;
+  else if(selYr!==null)lbl.textContent='Showing: '+selYr;
+  else lbl.textContent='No filter active';
+}
+
+function navPrev(e){e.stopPropagation();if(calView==='day'){calMonth--;if(calMonth<0){calMonth=11;calYear--;}}else if(calView==='month')calYear--;else calYear-=12;renderCal();}
+function navNext(e){e.stopPropagation();if(calView==='day'){calMonth++;if(calMonth>11){calMonth=0;calYear++;}}else if(calView==='month')calYear++;else calYear+=12;renderCal();}
+function drillUp(e){e.stopPropagation();if(calView==='day')setView('month');else if(calView==='month')setView('year');}
+
+function applyDateFilter() {
+  document.querySelectorAll('#req-tbody tr').forEach(function(tr) {
+    var d=tr.getAttribute('data-date'); if(!d){tr.classList.remove('date-hidden');return;}
+    var p=d.split('-'),yr=parseInt(p[0]),mo=parseInt(p[1])-1,show=true;
+    if(selDay)show=(d===selDay);else if(selMon!==null)show=(mo===selMon&&yr===selYr);else if(selYr!==null)show=(yr===selYr);
+    tr.classList.toggle('date-hidden',!show);
+  }); curPage=1; rebuildTable();
+}
+
+function clearDateFilter(e) {
+  if(e)e.stopPropagation(); selDay=null; selMon=null; selYr=null;
+  document.getElementById('cal-label').textContent='Filter by date';
+  document.getElementById('cal-btn').classList.remove('active-filter');
+  document.querySelectorAll('#req-tbody tr').forEach(function(tr){tr.classList.remove('date-hidden');});
+  curPage=1; rebuildTable(); closeCal();
+}
+
+// ── Toasts ──
+function showToast(msg, type) {
+  var container = document.getElementById('toast-container');
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + (type === 'success' ? 'success' : type === 'hold' ? 'hold' : 'info');
+  t.innerHTML = '<i class="ti ti-check"></i>' + msg;
+  container.appendChild(t);
+  setTimeout(function() {
+    t.classList.add('out');
+    setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 250);
+  }, 2800);
+}
+
+function previewImg(url) {
+  var wrap = document.getElementById('img-preview-wrap');
+  var img  = document.getElementById('img-preview');
+  var clr  = document.getElementById('img-url-clear');
+  if (url && url.trim().length > 4) {
+    // Set handlers BEFORE src so cached images don't miss onload
+    img.onload  = function() { wrap.style.display = 'block'; };
+    img.onerror = function() {
+      // Still show the wrap with a broken-image fallback rather than hiding
+      wrap.style.display = 'block';
+      img.style.display = 'none';
+      var fb = document.getElementById('img-preview-fallback');
+      if (!fb) {
+        fb = document.createElement('div');
+        fb.id = 'img-preview-fallback';
+        fb.style.cssText = 'padding:16px 20px;font-size:12px;color:var(--text-3);background:var(--surface-2);border-radius:var(--radius-md);border:1px dashed var(--border-2);';
+        fb.innerHTML = '<i class="ti ti-photo-off" style="font-size:18px;display:block;margin-bottom:4px"></i>Image could not load — may be blocked by the source site. The URL is saved.';
+        wrap.insertBefore(fb, wrap.firstChild);
+      }
+    };
+    // Show wrap right away so user sees something happening
+    img.style.display = 'block';
+    var fb = document.getElementById('img-preview-fallback');
+    if (fb) fb.remove();
+    wrap.style.display = 'block';
+    img.src = url.trim();
+    if (clr) clr.style.display = 'flex';
+  } else {
+    img.onload = null;
+    img.onerror = null;
+    wrap.style.display = 'none';
+    img.src = '';
+    img.style.display = 'block';
+    var fb2 = document.getElementById('img-preview-fallback');
+    if (fb2) fb2.remove();
+    if (clr) clr.style.display = 'none';
+  }
+}
+
+function removeImage() {
+  var inp = document.getElementById('img-url');
+  if (inp) inp.value = '';
+  var img = document.getElementById('img-preview');
+  // Nullify handlers BEFORE clearing src — prevents empty-src from triggering onerror
+  img.onload = null;
+  img.onerror = null;
+  img.src = '';
+  img.style.display = 'block';
+  var fb = document.getElementById('img-preview-fallback');
+  if (fb) fb.remove();
+  document.getElementById('img-preview-wrap').style.display = 'none';
+  var clr = document.getElementById('img-url-clear');
+  if (clr) clr.style.display = 'none';
+}
+
+function clearField(id) {
+  var inp = document.getElementById(id);
+  if (!inp) return;
+  inp.value = '';
+  var clr = document.getElementById(id + '-clear');
+  if (clr) clr.style.display = 'none';
+  inp.focus();
+}
+
+// Show/hide × on prod-url input
+document.addEventListener('DOMContentLoaded', function() {
+  var prodUrl = document.getElementById('prod-url');
+  var prodClr = document.getElementById('prod-url-clear');
+  if (prodUrl && prodClr) {
+    prodUrl.addEventListener('input', function() {
+      prodClr.style.display = this.value ? 'flex' : 'none';
+    });
+  }
+});
+
+// ── Edit pending request (loads into top form, same as draft flow) ──
+var editTargetRow = null;
+
+function openEditModal(row) {
+  editTargetRow = row;
+  var d = row.dataset;
+
+  // Fill product name
+  document.getElementById('prod-name').value = d.fullName || '';
+
+  // Fill product URL
+  var prodUrlEl = document.getElementById('prod-url');
+  prodUrlEl.value = d.prodUrl || '';
+  var prodClr = document.getElementById('prod-url-clear');
+  if (prodClr) prodClr.style.display = d.prodUrl ? 'flex' : 'none';
+
+  // Fill image URL
+  var imgUrlEl = document.getElementById('img-url');
+  imgUrlEl.value = d.imgUrl || '';
+  if (d.imgUrl) previewImg(d.imgUrl);
+
+  // Fill collection & category dropdowns
+  var selects = document.querySelectorAll('#panel-agent .card select.field-input');
+  if (selects[0]) setSelectValue(selects[0], d.collection || '');
+  if (selects[1]) setSelectValue(selects[1], d.category   || '');
+
+  // Fill remarks
+  var ta = document.getElementById('agent-remarks-input');
+  if (ta) ta.value = d.remarks || '';
+  var siSel = document.getElementById('superimpose-sel');
+  if (siSel) { siSel.value = d.superimpose || ''; onSuperimposeChange(siSel.value); }
+  var designerSel = document.getElementById('designer-sel');
+  if (designerSel) designerSel.value = d.designer || '';
+
+  // Fill fabric + swatch
+  var fabricSel = document.getElementById('fabric-name-sel');
+  if (d.fabric) {
+    setSelectValue(fabricSel, d.fabric);
+    onFabricName(fabricSel);
+    setTimeout(function() {
+      var swList = fabricSwatches[d.fabric] || [];
+      var match = swList.find(function(s) { return s.colour === d.colourName || (d.colourHex && s.hex.toLowerCase() === d.colourHex.toLowerCase()); });
+      if (match) {
+        var items = document.querySelectorAll('.swatch-item');
+        items.forEach(function(item) {
+          var nm = item.querySelector('.swatch-name');
+          if (nm && nm.textContent === match.colour) selectSwatch(item, match);
+        });
+      }
+    }, 50);
+  }
+
+  // Show edit banner
+  document.getElementById('edit-banner-title').textContent = 'Editing "' + (d.fullName || 'request') + '"';
+  var banner = document.getElementById('edit-mode-banner');
+  banner.style.display = 'flex';
+
+  // Change submit button to "Save changes"
+  document.getElementById('submit-btn-icon').className = 'ti ti-check';
+  document.getElementById('submit-btn-label').textContent = 'Save changes';
+
+  // Scroll form into view
+  document.getElementById('prod-name').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('prod-name').focus();
+  showToast('Editing "' + (d.fullName || 'request') + '" — make changes and re-submit', 'info');
+}
+
+function cancelEditMode() {
+  editTargetRow = null;
+  document.getElementById('edit-mode-banner').style.display = 'none';
+  document.getElementById('submit-btn-icon').className = 'ti ti-send';
+  document.getElementById('submit-btn-label').textContent = 'Submit new request';
+  // Clear form
+  document.getElementById('prod-name').value = '';
+  document.getElementById('prod-url').value = '';
+  var prodClr = document.getElementById('prod-url-clear');
+  if (prodClr) prodClr.style.display = 'none';
+  removeImage();
+  var selAll = document.querySelectorAll('#panel-agent .card select.field-input');
+  selAll.forEach(function(s){ s.selectedIndex = 0; });
+  var ta = document.getElementById('agent-remarks-input');
+  if (ta) ta.value = '';
+  document.getElementById('fabric-name-sel').selectedIndex = 0;
+  document.getElementById('fabric-detail').classList.add('hidden');
+  clearSwatchSel();
+  document.querySelectorAll('.field-error').forEach(function(el){ el.classList.remove('field-error'); });
+}
+
+// ── Init ──
+renderSidebar('agent');
+rebuildTable();
+</script>
+</body>
+</html>
