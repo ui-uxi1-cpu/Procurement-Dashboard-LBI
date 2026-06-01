@@ -183,36 +183,46 @@ textarea.field-input { resize: none; height: 56px; line-height: 1.5; }
 .legend-pct { margin-left: auto; font-weight: 600; font-family: var(--font-mono); font-size: 12px; }
 
 /* ── Fabric sourcing ── */
-.fabric-name-dropdown { margin-bottom: 12px; }
-.status-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+/* ── Fabric card ── */
+.fabric-name-dropdown { margin-bottom: 14px; }
+.fabric-divider { height: 1px; background: var(--border-3); margin: 14px 0; }
+.status-pills { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
 .status-pill {
-  font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 500; padding: 5px 13px; border-radius: 20px;
   cursor: pointer; border: 1.5px solid transparent; transition: all .15s;
   display: flex; align-items: center; gap: 5px; user-select: none;
 }
 .status-pill .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .sp-all { background: var(--surface-2); color: var(--text-2); border-color: var(--border-2); }
 .sp-all.active { background: var(--text-1); color: #fff; border-color: var(--text-1); }
-.sp-excess { background: var(--excess-bg); color: var(--excess-text); }
+.sp-excess { background: var(--excess-bg); color: var(--excess-text); border-color: transparent; }
 .sp-excess.active { border-color: var(--excess-dot); }
-.sp-regular { background: var(--regular-bg); color: var(--regular-text); }
+.sp-regular { background: var(--regular-bg); color: var(--regular-text); border-color: transparent; }
 .sp-regular.active { border-color: var(--regular-dot); }
-.sp-mif { background: var(--mif-bg); color: var(--mif-text); }
+.sp-mif { background: var(--mif-bg); color: var(--mif-text); border-color: transparent; }
 .sp-mif.active { border-color: var(--mif-dot); }
+.sp-new { background: var(--new-bg); color: var(--new-text); border-color: transparent; }
+.sp-new.active { border-color: var(--new-dot); }
 
 /* ── Swatch grid ── */
-.swatch-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; margin-bottom: 10px; }
+.swatch-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 7px; margin-bottom: 14px; }
 .swatch-item {
   border-radius: var(--radius-md); overflow: hidden; cursor: pointer;
-  border: 2px solid transparent; transition: all .15s;
+  border: 2px solid transparent; transition: border-color .15s, box-shadow .15s;
 }
-.swatch-item:hover { transform: scale(1.05); }
-.swatch-item.selected { border-color: var(--text-1); transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.swatch-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,.10); }
+.swatch-item.si-selected { border-color: #6B7280; box-shadow: 0 0 0 3px rgba(107,114,128,.15); }
 .swatch-item.sw-hidden { display: none; }
-.swatch-face { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-.swatch-bar { height: 5px; }
+.swatch-face {
+  width: 100%; padding-bottom: 75%; position: relative;
+}
+.swatch-face span {
+  position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; font-size: 16px;
+}
+.swatch-bar { height: 4px; }
 .swatch-name {
-  font-size: 10px; color: var(--text-2); text-align: center; padding: 4px 3px;
+  font-size: 9px; color: var(--text-2); text-align: center; padding: 4px 3px;
   background: var(--surface); border-top: 1px solid var(--border-3);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
 }
@@ -229,20 +239,10 @@ textarea.field-input { resize: none; height: 56px; line-height: 1.5; }
 .sel-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-left: auto; flex-shrink: 0; }
 
 /* ── Stock row ── */
-.stock-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-.stock-cell { background: var(--surface-2); border-radius: var(--radius-md); padding: 9px 11px; }
+.stock-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.stock-cell { background: var(--surface); border: 1px solid var(--border-3); border-radius: var(--radius-md); padding: 9px 11px; }
 .stock-lbl { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
 .stock-val { font-size: 15px; font-weight: 600; color: var(--text-1); font-family: var(--font-mono); }
-
-/* ── Add fabric btn ── */
-.add-fabric-btn {
-  display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500;
-  padding: 8px 13px; border-radius: var(--radius-md);
-  border: 1.5px dashed var(--border-2); color: var(--text-2);
-  background: transparent; cursor: pointer; width: 100%; transition: all .15s;
-  font-family: var(--font);
-}
-.add-fabric-btn:hover { background: var(--surface-2); border-color: var(--border-1); color: var(--text-1); }
 
 /* ── CTA row ── */
 .cta-row { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 14px; }
@@ -415,7 +415,8 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
 .page-btn.active { background: var(--text-1); color: #fff; border-color: var(--text-1); }
 .page-btn:hover:not(.active) { background: var(--surface-2); }
 
-/* ── Superimpose badge ── */
+/* ── Sub-brand add-new option ── */
+#subbrand-sel option[value="__add_new__"] { color: var(--pending-text); font-style: italic; border-top: 1px solid var(--border-2); }
 .si-badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
 .si-yes { background:#E6F1FB; color:#0C447C; }
 .si-no  { background:#F2F2F0; color:#6B6B67; }
@@ -651,6 +652,62 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
 .apv-btn-approve { padding: 9px 20px; border-radius: var(--radius-lg); border: none; background: #085041; color: #fff; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: opacity .15s; }
 .apv-btn-approve:hover { opacity: .88; }
 
+/* ── Production progress bar ── */
+.prod-progress-wrap { margin-bottom: 8px; }
+.prod-progress-label {
+  font-size: 12px; font-weight: 600; color: var(--text-2);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 6px;
+}
+.prod-progress-label strong { color: #085041; font-size: 13px; }
+.prod-progress-track {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  position: relative;
+  padding-bottom: 4px;
+}
+/* Grey unfilled track */
+.prod-progress-track::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 6.25%; right: 6.25%;
+  height: 4px;
+  background: #D1D5DB;
+  border-radius: 4px;
+  z-index: 0;
+}
+/* Green filled portion */
+.prod-progress-fill {
+  position: absolute; top: 4px; left: 6.25%;
+  height: 4px; background: #1D9E75;
+  border-radius: 4px; z-index: 1;
+}
+.prod-stage {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; position: relative; z-index: 2; cursor: default;
+}
+.prod-stage-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #D1D5DB; border: 3px solid #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1.5px #D1D5DB;
+}
+.prod-stage.done-stage .prod-stage-dot {
+  background: #1D9E75; border-color: #fff;
+  box-shadow: 0 0 0 1.5px #1D9E75;
+}
+.prod-stage.active-stage .prod-stage-dot {
+  background: #fff; border-color: #1D9E75; border-width: 3px;
+  box-shadow: 0 0 0 3px rgba(29,158,117,.3);
+  width: 16px; height: 16px;
+}
+.prod-stage-name {
+  font-size: 10px; font-weight: 500; color: #9CA3AF;
+  text-align: center; line-height: 1.35; max-width: 66px;
+}
+.prod-stage.done-stage   .prod-stage-name { color: #6B7280; }
+.prod-stage.active-stage .prod-stage-name { color: #085041; font-weight: 700; font-size: 11px; }
+
 .pending-edit-btn {
   display: inline-flex; align-items: center; gap: 5px;
   font-size: 11px; font-weight: 500; padding: 4px 10px;
@@ -733,10 +790,6 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
         <div class="card">
           <div class="card-label">Product information</div>
           <div class="field-group">
-            <label class="field-label">Product name</label>
-            <input class="field-input" type="text" placeholder="e.g. Summer Breeze Dress" id="prod-name">
-          </div>
-          <div class="field-group">
             <label class="field-label">Product link</label>
             <div class="link-input-wrap">
               <i class="ti ti-world link-icon"></i>
@@ -759,8 +812,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
           <div class="field-row">
             <div>
               <label class="field-label">Sub-brand</label>
-              <select class="field-input">
+              <select class="field-input" id="subbrand-sel" onchange="onSubbrandChange(this)">
                 <option value="">Select sub-brand</option>
+                <option value="__add_new__">+ Add new sub-brand</option>
                 <option>365 by Littlebox</option>
                 <option>Clubbox</option>
                 <option>Lace &amp; blush</option>
@@ -779,6 +833,11 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
                 <option>Valentine Collection</option>
                 <option>Vacation</option>
               </select>
+              <div id="subbrand-add-row" style="display:none;margin-top:8px;display:none;gap:6px;align-items:center">
+                <input class="field-input" type="text" id="subbrand-new-input" placeholder="Type new sub-brand name..." style="flex:1;margin:0">
+                <button onclick="confirmNewSubbrand()" style="padding:8px 14px;border-radius:var(--radius-md);background:var(--text-1);color:#fff;border:none;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Add</button>
+                <button onclick="cancelNewSubbrand()" style="padding:8px 10px;border-radius:var(--radius-md);background:var(--surface-2);color:var(--text-2);border:1px solid var(--border-2);font-family:var(--font);font-size:12px;cursor:pointer;flex-shrink:0">✕</button>
+              </div>
             </div>
             <div>
               <label class="field-label">Category</label>
@@ -821,7 +880,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
 
         <!-- Fabric sourcing card -->
         <div class="card">
-          <div class="card-label" style="margin-bottom:8px">Select fabric &amp; colour</div>
+          <div class="card-label" style="margin-bottom:14px">Select fabric &amp; colour</div>
+
+          <!-- Fabric name picker -->
           <div class="fabric-name-dropdown">
             <label class="field-label">Fabric name</label>
             <select class="field-input" id="fabric-name-sel" onchange="onFabricName(this)">
@@ -830,28 +891,43 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
               <option>Premium Linen</option><option>Rib Knit</option><option>Silk Crepe</option>
             </select>
           </div>
+
           <div id="fabric-detail" class="hidden">
-            <label class="field-label" style="margin-bottom:8px">Fabric status</label>
+
+            <!-- Filter pills -->
+            <div class="fabric-divider"></div>
             <div class="status-pills">
               <button class="status-pill sp-all active" id="pill-all" onclick="filterSwatches('all',this)">All</button>
-              <button class="status-pill sp-excess" id="pill-excess" onclick="filterSwatches('excess',this)"><span class="dot" style="background:#EF9F27"></span>Excess</button>
-              <button class="status-pill sp-regular" id="pill-regular" onclick="filterSwatches('regular',this)"><span class="dot" style="background:#378ADD"></span>Regular</button>
               <button class="status-pill sp-mif" id="pill-mif" onclick="filterSwatches('mif',this)"><span class="dot" style="background:#1D9E75"></span>MIF</button>
-              <button class="status-pill" id="pill-new" onclick="filterSwatches('new',this)" style="border-color:var(--new-dot)"><span class="dot" style="background:var(--new-dot)"></span>New Fabric</button>
+              <button class="status-pill sp-excess" id="pill-excess" onclick="filterSwatches('excess',this)"><span class="dot" style="background:#EF9F27"></span>Excess</button>
+              <button class="status-pill sp-new" id="pill-new" onclick="filterSwatches('new',this)"><span class="dot" style="background:var(--new-dot)"></span>New</button>
+              <button class="status-pill sp-regular" id="pill-regular" onclick="filterSwatches('regular',this)"><span class="dot" style="background:#378ADD"></span>Regular</button>
             </div>
+
+            <!-- Swatch grid -->
             <div class="swatch-grid" id="swatch-grid"></div>
+
+            <!-- Selected colour strip -->
             <div class="sel-strip" id="sel-strip">
               <span style="font-size:12px;color:var(--text-3)">Tap a swatch to select colour</span>
             </div>
+
+            <!-- Stock info -->
             <div class="stock-row hidden" id="stock-row">
-              <div class="stock-cell"><div class="stock-lbl">Amount</div><div class="stock-val" id="sv-stock">—</div></div>
-              <div class="stock-cell"><div class="stock-lbl">Excess</div><div class="stock-val" id="sv-free">—</div></div>
+              <div class="stock-cell">
+                <div class="stock-lbl">Stock</div>
+                <div class="stock-val" id="sv-stock">—</div>
+              </div>
+              <div class="stock-cell">
+                <div class="stock-lbl">Available</div>
+                <div class="stock-val" id="sv-free">—</div>
+              </div>
             </div>
+
           </div>
-          <button class="add-fabric-btn" onclick="openModal('modal-add-fabric')">
-            <i class="ti ti-plus"></i> Add new fabric
-          </button>
         </div>
+
+        <!-- Action row -->
       </div>
 
       <!-- CTA row -->
@@ -900,14 +976,14 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
             </div>
           </div>
           <div class="filter-row-2">
-            <div class="search-full"><i class="ti ti-search"></i><input type="text" placeholder="Search requests by product name..." oninput="filterSearch(this.value)"></div>
+            <div class="search-full"><i class="ti ti-search"></i><input type="text" placeholder="Search by date..." oninput="filterSearch(this.value)"></div>
           </div>
           <div class="tbl-wrap">
             <table>
               <thead>
                 <tr>
                   <th style="width:76px">Image</th>
-                  <th>Product</th>
+                  <th style="width:150px">Date &amp; Time</th>
                   <th style="width:110px">Collection</th>
                   <th style="width:88px">Status</th>
                   <th style="width:80px">Fabric</th>
@@ -919,9 +995,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
                 </tr>
               </thead>
               <tbody id="req-tbody">
-                <tr class="data-row" data-status="approved" data-name="summer breeze dress" data-date="2026-05-13" data-full-name="Summer Breeze Dress" data-collection="SS26 Resort" data-category="Dresses" data-fabric="225 Twill" data-colour-id="CP-401" data-colour-hex="#E8846A" data-img-url="" data-prod-url="https://example.com/summer-breeze-dress" data-remarks="Soft drape preferred. Check lining options." data-admin-remark="Good texture choice. Approved." data-superimpose="Yes" data-designer="Aanya Sharma" onclick="toggleDrawer(this)">
+                <tr class="data-row" data-status="approved" data-name="summer breeze dress" data-date="2026-05-13" data-full-name="13 May 2026, 09:41 AM" data-timestamp="20260513094100" data-collection="SS26 Resort" data-category="Dresses" data-fabric="225 Twill" data-colour-id="CP-401" data-colour-hex="#E8846A" data-img-url="" data-prod-url="https://example.com/summer-breeze-dress" data-remarks="Soft drape preferred. Check lining options." data-admin-remark="Good texture choice. Approved." data-superimpose="Yes" data-designer="Aanya Sharma" onclick="toggleDrawer(this)">
                   <td><div class="thumb thumb-excess">👗</div></td>
-                  <td>Summer Breeze Dress</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">13 May 2026, 09:41 AM</td>
                   <td>SS26 Resort</td>
                   <td><span class="sb s-approved">Approved</span></td>
                   <td><span class="fab-badge fb-excess">Excess</span></td>
@@ -931,9 +1007,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
                   <td style="font-size:12px">Aanya Sharma</td>
                   <td></td>
                 </tr>
-                <tr class="data-row" data-status="pending" data-name="linen wrap top" data-date="2026-05-12" data-full-name="Linen Wrap Top" data-collection="SS26 Core" data-category="Tops" data-fabric="Premium Linen" data-colour-id="MB-202" data-colour-hex="#378ADD" data-img-url="" data-prod-url="" data-remarks="" data-admin-remark="" data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
+                <tr class="data-row" data-status="pending" data-name="linen wrap top" data-date="2026-05-12" data-full-name="12 May 2026, 11:05 AM" data-timestamp="20260512110500" data-collection="SS26 Core" data-category="Tops" data-fabric="Premium Linen" data-colour-id="MB-202" data-colour-hex="#378ADD" data-img-url="" data-prod-url="" data-remarks="" data-admin-remark="" data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
                   <td><div class="thumb thumb-mif">👕</div></td>
-                  <td>Linen Wrap Top</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">12 May 2026, 11:05 AM</td>
                   <td>SS26 Core</td>
                   <td><span class="sb s-pending">Pending</span></td>
                   <td><span class="fab-badge fb-mif">MIF</span></td>
@@ -943,9 +1019,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
                   <td><span style="color:var(--text-3)">—</span></td>
                   <td><button class="pending-edit-btn" onclick="event.stopPropagation();openEditModal(this.closest('tr'))"><i class="ti ti-edit"></i> Edit</button></td>
                 </tr>
-                <tr class="data-row" data-status="onhold" data-name="ribbed knit trousers" data-date="2026-05-11" data-full-name="Ribbed Knit Trousers" data-collection="AW26 Preview" data-category="Bottoms" data-fabric="Rib Knit" data-colour-id="CB-001" data-colour-hex="#2C2C2A" data-img-url="" data-prod-url="https://example.com/ribbed-knit-trousers" data-superimpose="Yes" data-designer="Rohan Mehta" data-remarks="Confirm weight of knit before proceeding." data-admin-remark="Fabric sourcing delayed. Awaiting stock confirmation from supplier." onclick="toggleDrawer(this)">
+                <tr class="data-row" data-status="onhold" data-name="ribbed knit trousers" data-date="2026-05-11" data-full-name="11 May 2026, 02:17 PM" data-timestamp="20260511141700" data-collection="AW26 Preview" data-category="Bottoms" data-fabric="Rib Knit" data-colour-id="CB-001" data-colour-hex="#2C2C2A" data-img-url="" data-prod-url="https://example.com/ribbed-knit-trousers" data-superimpose="Yes" data-designer="Rohan Mehta" data-remarks="Confirm weight of knit before proceeding." data-admin-remark="Fabric sourcing delayed. Awaiting stock confirmation from supplier." onclick="toggleDrawer(this)">
                   <td><div class="thumb thumb-regular">👖</div></td>
-                  <td>Ribbed Knit Trousers</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">11 May 2026, 02:17 PM</td>
                   <td>AW26 Preview</td>
                   <td><span class="sb s-onhold">On hold</span></td>
                   <td><span class="fab-badge fb-regular">Regular</span></td>
@@ -955,9 +1031,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
                   <td><span class="sb s-onhold" style="font-size:10px">View</span></td>
                   <td></td>
                 </tr>
-                <tr class="data-row" data-status="approved" data-name="silk midi skirt" data-date="2026-04-28" data-full-name="Silk Midi Skirt" data-collection="SS26 Core" data-category="Bottoms" data-fabric="Silk Crepe" data-colour-id="SG-115" data-colour-hex="#8CB87A" data-img-url="" data-prod-url="" data-remarks="" data-admin-remark="" data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
+                <tr class="data-row" data-status="approved" data-name="silk midi skirt" data-date="2026-04-28" data-full-name="28 Apr 2026, 04:53 PM" data-timestamp="20260428165300" data-collection="SS26 Core" data-category="Bottoms" data-fabric="Silk Crepe" data-colour-id="SG-115" data-colour-hex="#8CB87A" data-img-url="" data-prod-url="" data-remarks="" data-admin-remark="" data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
                   <td><div class="thumb thumb-excess">👗</div></td>
-                  <td>Silk Midi Skirt</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">28 Apr 2026, 04:53 PM</td>
                   <td>SS26 Core</td>
                   <td><span class="sb s-approved">Approved</span></td>
                   <td><span class="fab-badge fb-excess">Excess</span></td>
@@ -967,9 +1043,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
                   <td><span style="color:var(--text-3)">—</span></td>
                   <td></td>
                 </tr>
-                <tr class="data-row" data-status="pending" data-name="cotton bomber jacket" data-date="2026-04-15" data-full-name="Cotton Bomber Jacket" data-collection="AW26 Main" data-category="Outerwear" data-fabric="Cotton Poplin" data-colour-id="RS-212" data-colour-hex="#D4537E" data-img-url="" data-prod-url="https://example.com/cotton-bomber" data-remarks="Check sleeve length options." data-admin-remark="" data-superimpose="Yes" data-designer="Priya Nair" onclick="toggleDrawer(this)">
+                <tr class="data-row" data-status="pending" data-name="cotton bomber jacket" data-date="2026-04-15" data-full-name="15 Apr 2026, 10:22 AM" data-timestamp="20260415102200" data-collection="AW26 Main" data-category="Outerwear" data-fabric="Cotton Poplin" data-colour-id="RS-212" data-colour-hex="#D4537E" data-img-url="" data-prod-url="https://example.com/cotton-bomber" data-remarks="Check sleeve length options." data-admin-remark="" data-superimpose="Yes" data-designer="Priya Nair" onclick="toggleDrawer(this)">
                   <td><div class="thumb thumb-regular">🧥</div></td>
-                  <td>Cotton Bomber Jacket</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">15 Apr 2026, 10:22 AM</td>
                   <td>AW26 Main</td>
                   <td><span class="sb s-pending">Pending</span></td>
                   <td><span class="fab-badge fb-regular">Regular</span></td>
@@ -979,9 +1055,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
                   <td><span style="color:var(--text-3)">—</span></td>
                   <td><button class="pending-edit-btn" onclick="event.stopPropagation();openEditModal(this.closest('tr'))"><i class="ti ti-edit"></i> Edit</button></td>
                 </tr>
-                <tr class="data-row" data-status="onhold" data-name="pleated wide leg pants" data-date="2026-03-20" data-full-name="Pleated Wide Leg Pants" data-collection="SS26 Resort" data-category="Bottoms" data-fabric="Premium Linen" data-colour-id="TL-304" data-colour-hex="#1D9E75" data-img-url="" data-prod-url="" data-remarks="Wide leg fit — needs extra fabric allowance." data-admin-remark="MIF allocation under review. Hold until Q3 clearance." data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
+                <tr class="data-row" data-status="onhold" data-name="pleated wide leg pants" data-date="2026-03-20" data-full-name="20 Mar 2026, 03:08 PM" data-timestamp="20260320150800" data-collection="SS26 Resort" data-category="Bottoms" data-fabric="Premium Linen" data-colour-id="TL-304" data-colour-hex="#1D9E75" data-img-url="" data-prod-url="" data-remarks="Wide leg fit — needs extra fabric allowance." data-admin-remark="MIF allocation under review. Hold until Q3 clearance." data-superimpose="No" data-designer="" onclick="toggleDrawer(this)">
                   <td><div class="thumb thumb-mif">👗</div></td>
-                  <td>Pleated Wide Leg Pants</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">20 Mar 2026, 03:08 PM</td>
                   <td>SS26 Resort</td>
                   <td><span class="sb s-onhold">On hold</span></td>
                   <td><span class="fab-badge fb-mif">MIF</span></td>
@@ -1008,11 +1084,11 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
         <div id="tab-drafts" class="hidden">
           <div class="tbl-wrap">
             <table>
-              <thead><tr><th style="width:60px">Image</th><th>Product</th><th style="width:110px">Collection</th><th style="width:75px">Status</th><th style="width:80px">Fabric</th><th style="width:95px">Colour ID</th><th style="width:80px">Actions</th></tr></thead>
+              <thead><tr><th style="width:60px">Image</th><th style="width:150px">Date &amp; Time</th><th style="width:110px">Collection</th><th style="width:75px">Status</th><th style="width:80px">Fabric</th><th style="width:95px">Colour ID</th><th style="width:80px">Actions</th></tr></thead>
               <tbody id="draft-tbody">
-                <tr data-draft-name="Casual Linen Blazer" data-draft-collection="AW26 Essentials" data-draft-category="Outerwear" data-draft-fabric="" data-draft-colour="" data-draft-remarks="Need to confirm lining fabric first.">
+                <tr data-draft-name="Casual Linen Blazer" data-draft-ts="05 May 2026, 03:22 PM" data-draft-collection="AW26 Essentials" data-draft-category="Outerwear" data-draft-fabric="" data-draft-colour="" data-draft-remarks="Need to confirm lining fabric first.">
                   <td><div class="thumb" style="background:var(--surface-2)">👗</div></td>
-                  <td style="font-weight:500">Casual Linen Blazer</td>
+                  <td style="font-size:12px;font-family:var(--font-mono)">05 May 2026, 03:22 PM</td>
                   <td style="color:var(--text-2);font-size:12px">AW26 Essentials</td>
                   <td><span class="sb s-draft">Draft</span></td>
                   <td style="color:var(--text-3);font-size:12px">Not selected</td>
@@ -1022,9 +1098,9 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
                     <button class="act-icon-btn" onclick="deleteDraft(this)"><i class="ti ti-trash"></i><span class="tip">Delete</span></button>
                   </div></td>
                 </tr>
-                <tr data-draft-name="Pleated Wide Leg Pants" data-draft-collection="SS26 Resort" data-draft-category="Bottoms" data-draft-fabric="Premium Linen" data-draft-colour="TL-304" data-draft-remarks="">
+                <tr data-draft-name="Pleated Wide Leg Pants" data-draft-ts="28 Apr 2026, 10:14 AM" data-draft-collection="SS26 Resort" data-draft-category="Bottoms" data-draft-fabric="Premium Linen" data-draft-colour="TL-304" data-draft-remarks="">
                   <td><div class="thumb thumb-mif">👖</div></td>
-                  <td style="font-weight:500">Pleated Wide Leg Pants</td>
+                  <td style="font-size:12px;font-family:var(--font-mono)">28 Apr 2026, 10:14 AM</td>
                   <td style="color:var(--text-2);font-size:12px">SS26 Resort</td>
                   <td><span class="sb s-draft">Draft</span></td>
                   <td><span class="fab-badge fb-mif">MIF</span></td>
@@ -1094,36 +1170,39 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
           </div>
           <div class="tbl-wrap">
             <table>
-              <thead><tr><th style="width:56px">Image</th><th>Product</th><th style="width:105px">Sub-brand</th><th style="width:72px">Fabric</th><th style="width:55px">Agent</th><th style="width:95px">Actions</th></tr></thead>
+              <thead><tr><th style="width:56px">Image</th><th style="width:145px">Date &amp; Time</th><th style="width:105px">Sub-brand</th><th style="width:72px">Fabric</th><th style="width:55px">Agent</th><th style="width:88px">Status</th><th style="width:95px">Actions</th></tr></thead>
               <tbody id="admin-tbody">
-                <tr class="data-row" data-astatus="pending" data-aname="summer breeze dress" data-afull-name="Summer Breeze Dress" data-acollection="SS26 Resort" data-acategory="Dresses" data-afabric="Excess" data-acolour-id="CP-401" data-acolour-hex="#E8846A" data-aagent="A. Smith" data-aremarks="Soft drape preferred. Check lining options." data-aadmin-remark="" data-asuperimpose="Yes" onclick="toggleAdminDrawer(this)">
+                <tr class="data-row" data-astatus="pending" data-aname="summer breeze dress" data-afull-name="13 May 2026, 09:41 AM" data-atimestamp="1" data-acollection="SS26 Resort" data-acategory="Dresses" data-afabric="Excess" data-acolour-id="CP-401" data-acolour-hex="#E8846A" data-aagent="A. Smith" data-aremarks="Soft drape preferred. Check lining options." data-aadmin-remark="" data-asuperimpose="Yes" onclick="toggleAdminDrawer(this)">
                   <td><div class="thumb thumb-excess">👗</div></td>
-                  <td>Summer Breeze Dress</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">13 May 2026, 09:41 AM</td>
                   <td>SS26 Resort</td>
                   <td><span class="fab-badge fb-excess">Excess</span></td>
                   <td>A. Smith</td>
+                  <td><span class="sb s-pending">Pending</span></td>
                   <td onclick="event.stopPropagation()"><div class="act-actions">
                     <button class="act-icon-btn approve" onclick="inlineApprove(this)"><i class="ti ti-circle-check"></i><span class="tip">Approve</span></button>
                     <button class="act-icon-btn hold" onclick="adminAction(this,'hold','Awaiting stock confirmation.')"><i class="ti ti-ban"></i><span class="tip">Put on hold</span></button>
                   </div></td>
                 </tr>
-                <tr class="data-row" data-astatus="pending" data-aname="linen wrap top" data-afull-name="Linen Wrap Top" data-acollection="SS26 Core" data-acategory="Tops" data-afabric="MIF" data-acolour-id="MB-202" data-acolour-hex="#378ADD" data-aagent="J. Doe" data-aremarks="" data-aadmin-remark="" data-asuperimpose="No" onclick="toggleAdminDrawer(this)">
+                <tr class="data-row" data-astatus="pending" data-aname="linen wrap top" data-afull-name="12 May 2026, 11:05 AM" data-atimestamp="1" data-acollection="SS26 Core" data-acategory="Tops" data-afabric="MIF" data-acolour-id="MB-202" data-acolour-hex="#378ADD" data-aagent="J. Doe" data-aremarks="" data-aadmin-remark="" data-asuperimpose="No" onclick="toggleAdminDrawer(this)">
                   <td><div class="thumb thumb-mif">👕</div></td>
-                  <td>Linen Wrap Top</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">12 May 2026, 11:05 AM</td>
                   <td>SS26 Core</td>
                   <td><span class="fab-badge fb-mif">MIF</span></td>
                   <td>J. Doe</td>
+                  <td><span class="sb s-pending">Pending</span></td>
                   <td onclick="event.stopPropagation()"><div class="act-actions">
                     <button class="act-icon-btn approve" onclick="inlineApprove(this)"><i class="ti ti-circle-check"></i><span class="tip">Approve</span></button>
                     <button class="act-icon-btn hold" onclick="adminAction(this,'hold','MIF allocation under review.')"><i class="ti ti-ban"></i><span class="tip">Put on hold</span></button>
                   </div></td>
                 </tr>
-                <tr class="data-row" data-astatus="pending" data-aname="ribbed knit trousers" data-afull-name="Ribbed Knit Trousers" data-acollection="AW26 Preview" data-acategory="Bottoms" data-afabric="Regular" data-acolour-id="CB-001" data-acolour-hex="#2C2C2A" data-aagent="S. Lee" data-aremarks="Confirm weight of knit before proceeding." data-aadmin-remark="" data-asuperimpose="Yes" onclick="toggleAdminDrawer(this)">
+                <tr class="data-row" data-astatus="pending" data-aname="ribbed knit trousers" data-afull-name="11 May 2026, 02:17 PM" data-atimestamp="1" data-acollection="AW26 Preview" data-acategory="Bottoms" data-afabric="Regular" data-acolour-id="CB-001" data-acolour-hex="#2C2C2A" data-aagent="S. Lee" data-aremarks="Confirm weight of knit before proceeding." data-aadmin-remark="" data-asuperimpose="Yes" onclick="toggleAdminDrawer(this)">
                   <td><div class="thumb thumb-regular">👖</div></td>
-                  <td>Ribbed Knit Trousers</td>
+                  <td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">11 May 2026, 02:17 PM</td>
                   <td>AW26 Preview</td>
                   <td><span class="fab-badge fb-regular">Regular</span></td>
                   <td>S. Lee</td>
+                  <td><span class="sb s-pending">Pending</span></td>
                   <td onclick="event.stopPropagation()"><div class="act-actions">
                     <button class="act-icon-btn approve" onclick="inlineApprove(this)"><i class="ti ti-circle-check"></i><span class="tip">Approve</span></button>
                     <button class="act-icon-btn hold" onclick="adminAction(this,'hold','Fabric sourcing delayed. Awaiting stock confirmation from supplier.')"><i class="ti ti-ban"></i><span class="tip">Put on hold</span></button>
@@ -1169,30 +1248,6 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
   </div>
 </div>
 
-<!-- Add fabric modal -->
-<div class="modal-overlay" id="modal-add-fabric">
-  <div class="modal">
-    <div class="modal-title">Add new fabric</div>
-    <div class="modal-sub">This fabric and colour will be added to the sourcing library and appear in the swatch grid.</div>
-    <div class="field-group">
-      <label class="field-label">Fabric material</label>
-      <input class="field-input" type="text" placeholder="e.g. Organic Cotton Twill">
-    </div>
-    <div class="modal-field-row">
-      <div><label class="field-label">Colour ID</label><input class="field-input" type="text" placeholder="e.g. OC-501"></div>
-      <div><label class="field-label">Colour name</label><input class="field-input" type="text" placeholder="e.g. Olive"></div>
-    </div>
-    <div class="modal-field-row">
-      <div><label class="field-label">Colour</label><input class="field-input color-picker-input" type="color" value="#639922"></div>
-      <div><label class="field-label">Quantity (m)</label><input class="field-input" type="number" placeholder="0" min="0"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn" onclick="closeModal('modal-add-fabric')">Cancel</button>
-      <button class="modal-btn primary" onclick="closeModal('modal-add-fabric');showToast('New fabric added to library','success')">Add fabric</button>
-    </div>
-  </div>
-</div>
-
 <!-- Admin remarks modal -->
 <div class="modal-overlay" id="modal-remarks">
   <div class="modal">
@@ -1213,39 +1268,76 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
       <div class="apv-header-icon"><i class="ti ti-circle-check"></i></div>
       <div>
         <div class="apv-header-title" id="apv-title">Approved Procurement — Link Details</div>
-        <div class="apv-header-sub" id="apv-sub">Fill in additional details before confirming approval</div>
+        <div class="apv-header-sub" id="apv-sub">Review and edit all details before confirming approval</div>
       </div>
     </div>
 
     <div class="apv-body">
 
-      <!-- Product details (pre-filled, read-only) -->
+      <!-- Product details — fully editable -->
       <div class="apv-section">
         <div class="apv-section-hd"><i class="ti ti-info-circle"></i>Product details</div>
         <div class="apv-section-bd">
-          <!-- Image + core info row -->
-          <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:4px">
-            <div id="apv-img-wrap" style="flex-shrink:0;width:140px;height:185px;border-radius:var(--radius-lg);background:var(--surface-3);border:1px solid var(--border-2);overflow:hidden;display:flex;align-items:center;justify-content:center;">
-              <img id="apv-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
-              <span id="apv-img-placeholder" style="font-size:48px">👗</span>
+
+          <!-- Image + core info -->
+          <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+            <!-- Product image with change option -->
+            <div style="flex-shrink:0;display:flex;flex-direction:column;gap:6px;width:140px;">
+              <!-- Change button above image -->
+              <button onclick="apvClickZone()" style="display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:600;padding:6px 0;border-radius:var(--radius-md);background:var(--surface-2);border:1px solid var(--border-2);color:var(--text-2);cursor:pointer;font-family:var(--font);width:100%;transition:background .15s;" onmouseover="this.style.background='var(--surface-3)'" onmouseout="this.style.background='var(--surface-2)'">
+                <i class="ti ti-photo"></i> Change photo
+              </button>
+              <!-- Image box — shows agent's image, accepts drag-drop and file picker -->
+              <div id="apv-dropzone"
+                style="width:140px;height:185px;border-radius:var(--radius-lg);background:var(--surface-3);border:1px solid var(--border-2);overflow:hidden;position:relative;"
+                ondragover="apvDragOver(event)"
+                ondragleave="apvDragLeave(event)"
+                ondrop="apvDrop(event)">
+                <img id="apv-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0;">
+                <div id="apv-img-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;text-align:center;pointer-events:none;">
+                  <span style="font-size:40px">👗</span>
+                  <span style="font-size:10px;color:var(--text-3);line-height:1.4">No image</span>
+                </div>
+                <input type="file" id="apv-file-input" accept="image/*" style="display:none" onchange="apvFileChosen(event)">
+              </div>
             </div>
-            <div style="flex:1;min-width:0">
-              <div class="apv-row-2" style="margin-bottom:10px">
-                <div class="apv-field"><div class="apv-label">Product name</div><div class="apv-value" id="apv-prod-name">—</div></div>
+
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px">
+              <div class="apv-row-2">
+                <div class="apv-field"><div class="apv-label">Timestamp / ID</div><div class="apv-value" id="apv-prod-name" style="font-family:var(--font-mono);font-size:12px">—</div></div>
                 <div class="apv-field"><div class="apv-label">Agent</div><div class="apv-value" id="apv-agent">—</div></div>
               </div>
-              <div class="apv-row-4">
+              <div class="apv-row-2">
+                <div class="apv-field"><div class="apv-label">Category</div>
+                  <select class="apv-input apv-select" id="apv-category-sel">
+                    <option value="">Select category</option>
+                    <option>Tops</option><option>Bottoms</option><option>Dresses</option>
+                    <option>Outerwear</option><option>Knitwear</option><option>Accessories</option>
+                  </select>
+                </div>
+                <div class="apv-field"><div class="apv-label">Sub-brand</div>
+                  <select class="apv-input apv-select" id="apv-collection-sel">
+                    <option value="">Select sub-brand</option>
+                    <option>365 by Littlebox</option><option>Clubbox</option><option>Lace &amp; blush</option>
+                    <option>Workish</option><option>After Hours</option><option>Altbox</option>
+                    <option>Festive Edit</option><option>Layer by littlebox</option><option>Limited Drop</option>
+                    <option>OG Fits</option><option>Y2K dream</option><option>Eco Edit</option>
+                    <option>JetSetChic</option><option>LB Curve</option><option>LB COMBOS</option>
+                    <option>Valentine Collection</option><option>Vacation</option>
+                  </select>
+                </div>
+              </div>
+              <div class="apv-row-2">
                 <div class="apv-field"><div class="apv-label">For</div>
                   <select class="apv-input apv-select" id="apv-for"><option>Clothing</option><option>Accessories</option><option>Footwear</option></select>
                 </div>
-                <div class="apv-field"><div class="apv-label">Category</div><div class="apv-value" id="apv-category">—</div></div>
-                <div class="apv-field"><div class="apv-label">Sub-brand</div><div class="apv-value" id="apv-collection">—</div></div>
                 <div class="apv-field"><div class="apv-label">Pattern type</div>
                   <select class="apv-input apv-select" id="apv-pattern"><option value="">Select</option><option>New</option><option>Repeat</option><option>Variation</option></select>
                 </div>
               </div>
             </div>
           </div>
+
           <div class="apv-row-2">
             <div class="apv-field"><div class="apv-label">Procurement remarks</div><textarea class="apv-input apv-textarea" id="apv-proc-remarks" placeholder="Add procurement remarks..."></textarea></div>
             <div class="apv-field"><div class="apv-label">Sampling remarks</div><textarea class="apv-input apv-textarea" id="apv-samp-remarks" placeholder="Add sampling remarks..."></textarea></div>
@@ -1257,17 +1349,47 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
         </div>
       </div>
 
-      <!-- Fabric -->
+      <!-- Superimpose SKU section — shown only when superimpose=Yes -->
+      <div class="apv-section" id="apv-superimpose-section" style="display:none">
+        <div class="apv-section-hd"><i class="ti ti-layers-intersect"></i>Superimpose</div>
+        <div class="apv-section-bd">
+          <div class="apv-row-3">
+            <div class="apv-field">
+              <div class="apv-label">Existing SKU</div>
+              <input class="apv-input" type="text" id="apv-sku-input" placeholder="e.g. TP13307" oninput="onSkuType(this.value)">
+            </div>
+            <div class="apv-field">
+              <div class="apv-label">Assigned SKU pattern</div>
+              <input class="apv-input" type="text" id="apv-sku-pattern" placeholder="No pattern assigned" readonly style="background:var(--surface-2);color:var(--text-2)">
+            </div>
+          </div>
+          <div class="apv-row-2">
+            <div class="apv-field">
+              <div class="apv-label">New SKU</div>
+              <input class="apv-input" type="text" id="apv-new-sku" placeholder="e.g. DRS-SS26-001-NEW">
+            </div>
+            <div class="apv-field">
+              <div class="apv-label">New SKU pattern</div>
+              <input class="apv-input" type="text" id="apv-new-sku-pattern" placeholder="e.g. Standard Dress Pattern V1">
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px"><i class="ti ti-info-circle" style="font-size:11px"></i> On approval, production stage will automatically advance to <strong style="color:var(--text-2)">Grading Done</strong>.</div>
+        </div>
+      </div>
+
+      <!-- Fabric — editable -->
       <div class="apv-section">
         <div class="apv-section-hd"><i class="ti ti-stack"></i>Fabric</div>
         <div class="apv-section-bd">
           <div class="apv-row-2">
-            <div class="apv-field"><div class="apv-label">Fabric name</div><div class="apv-value" id="apv-fabric-name">—</div></div>
+            <div class="apv-field"><div class="apv-label">Fabric name</div>
+              <input class="apv-input" type="text" id="apv-fabric-name" placeholder="e.g. 225 Twill">
+            </div>
             <div class="apv-field"><div class="apv-label">Colour</div>
               <div style="display:flex;align-items:center;gap:8px">
                 <div id="apv-colour-dot" style="width:16px;height:16px;border-radius:50%;border:1px solid var(--border-2);flex-shrink:0"></div>
-                <span class="apv-value" id="apv-colour-name">—</span>
-                <span id="apv-fabric-badge" style="margin-left:auto"></span>
+                <input class="apv-input" type="text" id="apv-colour-name" placeholder="Colour name" style="flex:1">
+                <span id="apv-fabric-badge" style="margin-left:4px"></span>
               </div>
             </div>
           </div>
@@ -1290,9 +1412,7 @@ tbody tr.fade-out { opacity: .4; transition: opacity .3s; }
           <div class="acc-add-row">
             <div class="apv-field"><div class="apv-label">Accessory name</div><input class="apv-input" type="text" id="acc-name-input" placeholder="e.g. Pearl button, Zipper..."></div>
             <div class="apv-field"><div class="apv-label">Input stage</div>
-              <select class="apv-input apv-select" id="acc-stage-input">
-                <option>Cutting</option><option>Stitching</option><option>Finishing</option>
-              </select>
+              <select class="apv-input apv-select" id="acc-stage-input"><option>Cutting</option><option>Stitching</option><option>Finishing</option></select>
             </div>
             <div class="apv-field"><div class="apv-label">Consumption</div><input class="apv-input" type="text" id="acc-consumption-input" placeholder="e.g. 4 pcs"></div>
             <div class="apv-field"><div class="apv-label">&nbsp;</div><button class="apv-btn-approve" style="width:100%;justify-content:center" onclick="addAccessory()"><i class="ti ti-plus"></i> Add</button></div>
@@ -1464,12 +1584,14 @@ function filterSwatches(type, btn) {
 }
 
 function resetPills() {
-  ['all','excess','regular','mif','new'].forEach(function(t) {
+  var map = {all:'sp-all', excess:'sp-excess', regular:'sp-regular', mif:'sp-mif', new:'sp-new'};
+  Object.keys(map).forEach(function(t) {
     var el = document.getElementById('pill-'+t);
     if (el) el.classList.remove('active');
   });
 }
 
+// ── Multi-fabric selection (max 4) ──
 function selectSwatch(item, s) {
   document.querySelectorAll('.swatch-item').forEach(function(el) { el.classList.remove('selected'); });
   item.classList.add('selected');
@@ -1485,6 +1607,7 @@ function selectSwatch(item, s) {
 }
 
 function clearSwatchSel() {
+  document.querySelectorAll('.swatch-item').forEach(function(el) { el.classList.remove('selected'); });
   document.getElementById('sel-strip').innerHTML = '<span style="font-size:12px;color:var(--text-3)">Tap a swatch to select colour</span>';
   document.getElementById('stock-row').classList.add('hidden');
 }
@@ -1531,7 +1654,13 @@ function toggleDrawer(row) {
     '<td colspan="'+colCount+'">' +
     '<div class="drawer-inner">' +
       '<div class="drawer-header">' +
-        '<span class="drawer-title">'+d.fullName+'</span>' +
+        '<div style="display:flex;align-items:center;gap:10px;min-width:0">' +
+          '<i class="ti ti-calendar-event" style="font-size:16px;color:var(--text-3);flex-shrink:0"></i>' +
+          '<div style="min-width:0">' +
+            '<div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-1)">'+d.fullName+'</div>' +
+            '<div style="font-size:11px;color:var(--text-3);margin-top:2px">'+(d.collection||'')+(d.category?' · '+d.category:'')+'</div>' +
+          '</div>' +
+        '</div>' +
         '<button class="drawer-close" onclick="closeDrawer(event)"><i class="ti ti-x"></i> Close</button>' +
       '</div>' +
       '<div class="drawer-grid">' +
@@ -1596,7 +1725,12 @@ function closeDrawer(e) {
 }
 function saveDraft() {
   // Capture current form state
-  var name     = document.getElementById('prod-name').value.trim() || 'Untitled draft';
+  var now2 = new Date();
+  var pad2 = function(n){ return String(n).padStart(2,'0'); };
+  var months2 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var h2 = now2.getHours(), ampm2 = h2 >= 12 ? 'PM' : 'AM', h12b = h2 % 12 || 12;
+  var draftDT = now2.getDate()+' '+months2[now2.getMonth()]+' '+now2.getFullYear()+', '+pad2(h12b)+':'+pad2(now2.getMinutes())+' '+ampm2;
+  var name = draftDT;
   var fabric   = document.getElementById('fabric-name-sel').value;
   var selects  = document.querySelectorAll('#panel-agent .card select.field-input');
   var collection = selects[0] ? selects[0].value : '';
@@ -1613,6 +1747,7 @@ function saveDraft() {
   var tbody = document.getElementById('draft-tbody');
   var tr = document.createElement('tr');
   tr.dataset.draftName       = name;
+  tr.dataset.draftTs         = draftDT;
   tr.dataset.draftCollection = collection;
   tr.dataset.draftCategory   = category;
   tr.dataset.draftFabric     = fabric;
@@ -1626,7 +1761,7 @@ function saveDraft() {
 
   tr.innerHTML =
     '<td><div class="thumb" style="background:var(--surface-2)">👗</div></td>'+
-    '<td style="font-weight:500">'+name+'</td>'+
+    '<td style="font-size:12px;font-family:var(--font-mono)">'+draftDT+'</td>'+
     '<td style="color:var(--text-2);font-size:12px">'+(collection||'—')+'</td>'+
     '<td><span class="sb s-draft">Draft</span></td>'+
     '<td>'+fabBadge+'</td>'+
@@ -1647,7 +1782,7 @@ function loadDraft(btn) {
   var d = row.dataset;
 
   // Fill product name
-  document.getElementById('prod-name').value = d.draftName || '';
+  // prod-name removed
 
   // Fill collection dropdown
   var selects = document.querySelectorAll('#panel-agent .card select.field-input');
@@ -1702,9 +1837,10 @@ function loadDraft(btn) {
   document.getElementById('tab-requests').classList.remove('hidden');
   document.getElementById('tab-drafts').classList.add('hidden');
 
-  document.getElementById('prod-name').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  document.getElementById('prod-name').focus();
-  showToast('"'+(d.draftName||'Draft')+'" loaded into form', 'success');
+  // Scroll to form top
+  var card = document.querySelector('#panel-agent .card');
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showToast('Draft from '+(d.draftTs||d.draftName||'saved draft')+' loaded', 'success');
 }
 
 function setSelectValue(sel, val) {
@@ -1723,8 +1859,7 @@ function validateAndSubmit() {
 
   var missing = [];
 
-  var nameEl = document.getElementById('prod-name');
-  if (!nameEl.value.trim()) { nameEl.closest('.field-group').classList.add('field-error'); missing.push('Product name'); }
+  // Product name removed — timestamp auto-generated on submit
 
   var selects = document.querySelectorAll('#panel-agent .card select.field-input');
   var collectionEl = selects[0];
@@ -1736,11 +1871,10 @@ function validateAndSubmit() {
   var fabricEl = document.getElementById('fabric-name-sel');
   if (!fabricEl.value) { fabricEl.closest('.fabric-name-dropdown').classList.add('field-error'); missing.push('Fabric name'); }
 
-  // Colour — check if swatch is selected
   var selStrip = document.getElementById('sel-strip');
   var hasSwatch = selStrip && selStrip.querySelector('.sel-dot');
-  if (!hasSwatch) { document.getElementById('swatch-grid').parentElement.style.outline = '2px solid #E53935'; document.getElementById('swatch-grid').parentElement.style.borderRadius = '8px'; missing.push('Fabric colour'); }
-  else { var sg = document.getElementById('swatch-grid'); if(sg){ sg.parentElement.style.outline=''; } }
+  if (!hasSwatch) { var sg = document.getElementById('swatch-grid'); if(sg){ sg.parentElement.style.outline='2px solid #E53935'; sg.parentElement.style.borderRadius='8px'; } missing.push('Fabric colour'); }
+  else { var sg2 = document.getElementById('swatch-grid'); if(sg2){ sg2.parentElement.style.outline=''; } }
 
   if (missing.length > 0) {
     showValidationPopup(missing);
@@ -1784,8 +1918,14 @@ function removeValidationPopup() {
 }
 
 function confirmSubmit() {
-  // Gather form values
-  var name       = document.getElementById('prod-name').value.trim();
+  // Auto-generate timestamp as the product identifier
+  var now = new Date();
+  var pad = function(n){ return String(n).padStart(2,'0'); };
+  var ts = now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds());
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var h = now.getHours(), ampm = h >= 12 ? 'PM' : 'AM', h12 = h % 12 || 12;
+  var displayDT = now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear()+', '+pad(h12)+':'+pad(now.getMinutes())+' '+ampm;
+  var name = displayDT; // used as identifier throughout
   var imgUrl     = document.getElementById('img-url').value.trim();
   var selects    = document.querySelectorAll('#panel-agent .card select.field-input');
   var collection = selects[0] ? selects[0].value || '—' : '—';
@@ -1827,8 +1967,7 @@ function confirmSubmit() {
   // ── EDIT MODE: update the existing row ──
   if (editTargetRow) {
     var tr = editTargetRow;
-    tr.dataset.fullName   = name;
-    tr.dataset.name       = name.toLowerCase();
+    // fullName stays as original timestamp — no name to update
     tr.dataset.collection = collection;
     tr.dataset.category   = selects[1] ? selects[1].value || '—' : '—';
     tr.dataset.fabric     = fabric;
@@ -1867,9 +2006,10 @@ function confirmSubmit() {
   var tr = document.createElement('tr');
   tr.className = 'data-row';
   tr.dataset.status      = 'pending';
-  tr.dataset.name        = name.toLowerCase();
+  tr.dataset.name        = ts.toLowerCase();
   tr.dataset.date        = dateStr;
-  tr.dataset.fullName    = name;
+  tr.dataset.timestamp   = ts;
+  tr.dataset.fullName    = displayDT;
   tr.dataset.collection  = collection;
   tr.dataset.category    = selects[1] ? selects[1].value || '—' : '—';
   tr.dataset.fabric      = fabric;
@@ -1888,7 +2028,7 @@ function confirmSubmit() {
   var designerCell = designer ? '<span style="font-size:12px">'+designer+'</span>' : '<span style="color:var(--text-3)">—</span>';
   tr.innerHTML =
     '<td>'+imgCell+'</td>'+
-    '<td>'+name+'</td>'+
+    '<td style="font-size:12px;font-family:var(--font-mono);color:var(--text-1)">'+displayDT+'</td>'+
     '<td>'+collection+'</td>'+
     '<td><span class="sb s-pending">Pending</span></td>'+
     '<td>'+fabCell+'</td>'+
@@ -1907,8 +2047,8 @@ function confirmSubmit() {
   var adminTr = document.createElement('tr');
   adminTr.className = 'data-row';
   adminTr.dataset.astatus     = 'pending';
-  adminTr.dataset.aname       = name.toLowerCase();
-  adminTr.dataset.afullName   = name;
+  adminTr.dataset.aname       = ts;
+  adminTr.dataset.afullName   = displayDT;
   adminTr.dataset.acollection = collection;
   adminTr.dataset.acategory   = selects[1] ? selects[1].value || '—' : '—';
   adminTr.dataset.afabric     = fabType === 'excess' ? 'Excess' : fabType === 'mif' ? 'MIF' : fabType === 'new' ? 'New Fabric' : 'Regular';
@@ -1932,7 +2072,7 @@ function confirmSubmit() {
     '<td><div class="thumb '+thumbClassA+'" style="font-size:20px">'+
       (imgUrl ? '<img src="'+imgUrl+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">' : '👗')+
     '</div></td>'+
-    '<td>'+name+'</td>'+
+    '<td style="font-size:12px;font-family:var(--font-mono)">'+displayDT+'</td>'+
     '<td>'+collection+'</td>'+
     '<td>'+fabCell+'</td>'+
     '<td>'+agentName+'</td>'+
@@ -1950,7 +2090,7 @@ function confirmSubmit() {
 }
 
 function resetForm() {
-  document.getElementById('prod-name').value = '';
+  var pn = document.getElementById('prod-name'); if (pn) pn.value = '';
   document.getElementById('prod-url').value = '';
   var prodClr = document.getElementById('prod-url-clear');
   if (prodClr) prodClr.style.display = 'none';
@@ -1969,7 +2109,81 @@ function resetForm() {
   if (sg) { sg.parentElement.style.outline=''; }
 }
 
-// ── Superimpose ──
+// ── Sub-brand custom add ──
+function onSubbrandChange(sel) {
+  var row = document.getElementById('subbrand-add-row');
+  if (sel.value === '__add_new__') {
+    sel.value = ''; // reset select visually
+    row.style.display = 'flex';
+    document.getElementById('subbrand-new-input').focus();
+  } else {
+    row.style.display = 'none';
+  }
+}
+
+function confirmNewSubbrand() {
+  var input = document.getElementById('subbrand-new-input');
+  var name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  var sel = document.getElementById('subbrand-sel');
+  // Insert right after the "Add new" option (index 1)
+  var addOpt = sel.querySelector('option[value="__add_new__"]');
+  var opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name;
+  addOpt.insertAdjacentElement('afterend', opt);
+  sel.value = name;
+  input.value = '';
+  document.getElementById('subbrand-add-row').style.display = 'none';
+  showToast('"'+name+'" added to sub-brands', 'success');
+}
+
+function cancelNewSubbrand() {
+  document.getElementById('subbrand-new-input').value = '';
+  document.getElementById('subbrand-add-row').style.display = 'none';
+  document.getElementById('subbrand-sel').value = '';
+}
+
+// ── Production stage update ──
+var PROD_STAGES = ['NEW_ENTRY','PATTERN_READY','SAMPLE_READY','SAMPLE_EVALUATED','SENT_FOR_MEASUREMENT','SENT_FOR_GRADING','GRADING_DONE','READY_FOR_PRODUCTION'];
+var PROD_LABELS = ['New Entry','Pattern Ready','Sample Ready','Sample Evaluated','Sent for Measurement','Sent for Grading','Grading Done','Ready for Production'];
+
+function setAdminProdStage(e, stage, rowIndex) {
+  e.stopPropagation();
+  var newIdx = PROD_STAGES.indexOf(stage);
+  if (newIdx < 0) return;
+
+  // Find the admin row by rowIndex
+  var allRows = document.querySelectorAll('#admin-tbody tr.data-row');
+  var adminRow = null;
+  allRows.forEach(function(r) { if (r.rowIndex === rowIndex) adminRow = r; });
+  if (!adminRow) return;
+
+  adminRow.dataset.aprodStage = stage;
+
+  // Update the progress track in-place
+  var track = document.getElementById('prod-track-'+rowIndex);
+  if (!track) return;
+  var stageEls = track.querySelectorAll('.prod-stage');
+  stageEls.forEach(function(el, i) {
+    var line = el.querySelector('.prod-stage-line');
+    var nameEl = el.querySelector('.prod-stage-name');
+    // Reset
+    line.className = 'prod-stage-line';
+    el.className = 'prod-stage';
+    // Apply
+    if (i < newIdx) { line.classList.add('done'); el.classList.add('done-stage'); }
+    else if (i === newIdx) { line.classList.add('active'); el.classList.add('active-stage'); }
+  });
+
+  // Update label
+  var labelEl = track.closest('.prod-progress-wrap').querySelector('.prod-progress-label strong');
+  if (labelEl) labelEl.textContent = PROD_LABELS[newIdx];
+
+  showToast('Stage updated to "'+PROD_LABELS[newIdx]+'"', 'success');
+}
+
+
 function onSuperimposeChange(val) {
   var field = document.getElementById('designer-field');
   if (field) field.style.display = val === 'Yes' ? 'block' : 'none';
@@ -2100,7 +2314,13 @@ function toggleAdminDrawer(row) {
     '<td colspan="'+colCount+'">' +
     '<div class="drawer-inner">' +
       '<div class="drawer-header">' +
-        '<span class="drawer-title">'+d.afullName+'</span>' +
+        '<div style="display:flex;align-items:center;gap:10px;min-width:0">' +
+          '<i class="ti ti-calendar-event" style="font-size:16px;color:var(--text-3);flex-shrink:0"></i>' +
+          '<div style="min-width:0">' +
+            '<div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-1)">'+d.afullName+'</div>' +
+            '<div style="font-size:11px;color:var(--text-3);margin-top:2px">'+(d.acollection||'')+(d.acategory?' · '+d.acategory:'')+'</div>' +
+          '</div>' +
+        '</div>' +
         '<button class="drawer-close" onclick="closeAdminDrawer(event)"><i class="ti ti-x"></i> Close</button>' +
       '</div>' +
       '<div class="drawer-grid">' +
@@ -2113,6 +2333,29 @@ function toggleAdminDrawer(row) {
         '</div>' +
         '<div class="drawer-right">' +
 
+          (function(){
+            if (d.astatus !== 'approved' && d.astatus !== 'onhold') return '';
+            var stages = ['NEW_ENTRY','PATTERN_READY','SAMPLE_READY','SAMPLE_EVALUATED','SENT_FOR_MEASUREMENT','SENT_FOR_GRADING','GRADING_DONE','READY_FOR_PRODUCTION'];
+            var labels = ['New Entry','Pattern Ready','Sample Ready','Sample Evaluated','Sent for Measurement','Sent for Grading','Grading Done','Ready for Production'];
+            var currentStage = d.aprodStage || 'NEW_ENTRY';
+            var ci = Math.max(0, stages.indexOf(currentStage));
+            var html = '<div class="drawer-section">' +
+              '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-chart-line chevron"></i>Production status <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+              '<div class="drawer-body"><div class="prod-progress-wrap">' +
+              '<div class="prod-progress-label"><i class="ti ti-flag-3" style="font-size:13px;color:var(--approved-text)"></i>Current stage: <strong>'+labels[ci]+'</strong></div>' +
+              '<div class="prod-progress-track">' +
+              '<div class="prod-progress-fill" style="width:calc('+(ci === 0 ? '0' : (ci / (stages.length-1) * 87.5 + 6.25))+'% - 0px)"></div>';
+            stages.forEach(function(stage, i) {
+              var stageClass = i < ci ? 'done-stage' : i === ci ? 'active-stage' : '';
+              html += '<div class="prod-stage '+stageClass+'">' +
+                '<div class="prod-stage-dot"></div>' +
+                '<div class="prod-stage-name">'+labels[i]+'</div>' +
+              '</div>';
+            });
+            html += '</div></div></div></div>';
+            return html;
+          })() +
+
           '<div class="drawer-section">' +
             '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-layout-grid chevron"></i>Details <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
             '<div class="drawer-body">' +
@@ -2122,7 +2365,6 @@ function toggleAdminDrawer(row) {
                 '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Fabric type</div><div class="drawer-meta-val"><span class="fab-badge '+fabricClass+'">'+d.afabric+'</span></div></div>' +
                 '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Colour ID</div><div class="drawer-meta-val" style="display:flex;align-items:center;gap:5px">'+colourDot+(d.acolourId||'—')+'</div></div>' +
                 '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Agent</div><div class="drawer-meta-val">'+(d.aagent||'—')+'</div></div>' +
-                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Status</div><div class="drawer-meta-val">'+statusLabel+'</div></div>' +
                 '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Superimpose</div><div class="drawer-meta-val">'+(d.asuperimpose ? '<span class="si-badge '+(d.asuperimpose==='Yes'?'si-yes':'si-no')+'">'+d.asuperimpose+'</span>' : '<span style="color:var(--text-3)">—</span>')+'</div></div>' +
                 (d.asuperimpose === 'Yes' ? '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Designer</div><div class="drawer-meta-val">'+(d.adesigner||'<span style="color:var(--text-3)">—</span>')+'</div></div>' : '') +
               '</div>' +
@@ -2143,6 +2385,41 @@ function toggleAdminDrawer(row) {
             '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-note chevron"></i>Agent remarks <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
             '<div class="drawer-body">'+agentRemarkHtml+'</div>' +
           '</div>' +
+
+          (d.astatus === 'approved' ? (function() {
+            var row2 = row;
+            var d2 = row2.dataset;
+            var accHtml = d2.aaccessories
+              ? d2.aaccessories.split(' | ').map(function(a){ return '<span class="acc-tag" style="font-size:11px">'+a+'</span>'; }).join('')
+              : '<span style="font-size:12px;color:var(--text-3)">None</span>';
+            var skuHtml = d2.askuRef
+              ? '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Existing SKU</div><div class="drawer-meta-val" style="font-family:var(--font-mono);font-weight:600">'+d2.askuRef+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">SKU pattern</div><div class="drawer-meta-val" style="font-size:11px">'+( d2.askuPattern||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">New SKU</div><div class="drawer-meta-val" style="font-family:var(--font-mono)">'+(d2.anewSku||'—')+'</div></div>' +
+                '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">New SKU pattern</div><div class="drawer-meta-val" style="font-size:11px">'+(d2.anewSkuPattern||'—')+'</div></div>'
+              : '';
+            return '<div class="drawer-section">' +
+              '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-circle-check chevron" style="color:var(--approved-text)"></i>Approval details <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
+              '<div class="drawer-body">' +
+                '<div class="drawer-meta-grid">' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">For</div><div class="drawer-meta-val">'+(d2.afor||'—')+'</div></div>' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Category</div><div class="drawer-meta-val">'+(d2.acategoryEdit||d2.acategory||'—')+'</div></div>' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Sub-brand</div><div class="drawer-meta-val">'+(d2.acollectionEdit||d2.acollection||'—')+'</div></div>' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Pattern type</div><div class="drawer-meta-val">'+(d2.apatternType||'—')+'</div></div>' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Fabric name</div><div class="drawer-meta-val">'+(d2.afabricName||d2.afabric||'—')+'</div></div>' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Colour</div><div class="drawer-meta-val">'+(d2.acolourEdit||d2.acolourId||'—')+'</div></div>' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Fabric used (m)</div><div class="drawer-meta-val">'+(d2.afabricUsed||'—')+'</div></div>' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Est. consumption (m)</div><div class="drawer-meta-val">'+(d2.aestConsumption||'—')+'</div></div>' +
+                  '<div class="drawer-meta-cell"><div class="drawer-meta-lbl">Input stage</div><div class="drawer-meta-val">'+(d2.ainputStage||'—')+'</div></div>' +
+                  skuHtml +
+                '</div>' +
+                (d2.aprocRemarks ? '<div style="margin-top:10px"><div class="drawer-meta-lbl" style="margin-bottom:4px">Procurement remarks</div><div class="drawer-remarks">'+d2.aprocRemarks+'</div></div>' : '') +
+                (d2.asampRemarks ? '<div style="margin-top:10px"><div class="drawer-meta-lbl" style="margin-bottom:4px">Sampling remarks</div><div class="drawer-remarks">'+d2.asampRemarks+'</div></div>' : '') +
+                '<div style="margin-top:10px"><div class="drawer-meta-lbl" style="margin-bottom:6px">Accessories</div><div style="display:flex;flex-wrap:wrap;gap:5px">'+accHtml+'</div></div>' +
+                (d2.aextraNotes ? '<div style="margin-top:10px"><div class="drawer-meta-lbl" style="margin-bottom:4px">Extra notes</div><div class="drawer-remarks">'+d2.aextraNotes+'</div></div>' : '') +
+              '</div>' +
+            '</div>';
+          })() : '') +
 
           '<div class="drawer-section">' +
             '<div class="drawer-section-title" onclick="toggleSection(this)"><i class="ti ti-message-2 chevron"></i>Admin remarks &amp; action <i class="ti ti-chevron-down chevron" style="margin-left:auto"></i></div>' +
@@ -2218,36 +2495,48 @@ function openApprovalModal(btn) {
     apvPlaceholder.style.display = 'block';
   }
 
-  // Pre-fill read-only product info
+  // Pre-fill all fields
   document.getElementById('apv-title').textContent = 'Approving — ' + (d.afullName || 'Request');
-  document.getElementById('apv-sub').textContent = 'Review and add production details before confirming.';
+  document.getElementById('apv-sub').textContent = 'Edit any details before confirming approval.';
   document.getElementById('apv-prod-name').textContent = d.afullName || '—';
   document.getElementById('apv-agent').textContent = d.aagent || '—';
-  document.getElementById('apv-category').textContent = d.acategory || '—';
-  document.getElementById('apv-collection').textContent = d.acollection || '—';
-  document.getElementById('apv-agent-remarks').textContent = d.aremarks || 'No remarks from agent';
 
-  // Product link
+  var catSel = document.getElementById('apv-category-sel');
+  catSel.value = d.acategory || '';
+  if (!catSel.value && d.acategory) { var o1=document.createElement('option'); o1.value=d.acategory; o1.textContent=d.acategory; catSel.appendChild(o1); catSel.value=d.acategory; }
+
+  var colSel = document.getElementById('apv-collection-sel');
+  colSel.value = d.acollection || '';
+  if (!colSel.value && d.acollection) { var o2=document.createElement('option'); o2.value=d.acollection; o2.textContent=d.acollection; colSel.appendChild(o2); colSel.value=d.acollection; }
+
+  // Fabric editable
+  var fbCls = {excess:'fb-excess',mif:'fb-mif',new:'fb-new',regular:'fb-regular'};
+  document.getElementById('apv-fabric-name').value = d.afabric || '';
+  document.getElementById('apv-colour-name').value = d.acolourId || '';
+  document.getElementById('apv-colour-dot').style.background = d.acolourHex || 'var(--surface-3)';
+  var fabType = d.afabric === 'Excess' ? 'excess' : d.afabric === 'MIF' ? 'mif' : d.afabric === 'New Fabric' ? 'new' : 'regular';
+  var badge = document.getElementById('apv-fabric-badge');
+  badge.innerHTML = d.afabric ? '<span class="fab-badge '+(fbCls[fabType]||'fb-regular')+'">'+({excess:'Excess',mif:'MIF',new:'New',regular:'Regular'}[fabType]||'Regular')+'</span>' : '';
+
+  document.getElementById('apv-agent-remarks').textContent = d.aremarks || 'No remarks from agent';
   var linkEl = document.getElementById('apv-prod-link');
   linkEl.innerHTML = d.aprodUrl
     ? '<a href="'+d.aprodUrl+'" target="_blank" rel="noopener" style="color:var(--pending-text);font-size:12px;word-break:break-all">'+d.aprodUrl+'</a>'
     : '<span style="color:var(--text-3);font-size:12px">No link provided</span>';
 
-  // Fabric
-  var fabricName = d.afabric || '';
-  document.getElementById('apv-fabric-name').textContent = fabricName || '—';
-  var colHex = d.acolourHex || '';
-  var colName = d.acolourName || d.acolourId || '—';
-  document.getElementById('apv-colour-dot').style.background = colHex || 'var(--surface-3)';
-  document.getElementById('apv-colour-name').textContent = colName;
+  // Superimpose SKU section
+  var siSec = document.getElementById('apv-superimpose-section');
+  siSec.style.display = d.asuperimpose === 'Yes' ? 'block' : 'none';
+  var skuInp = document.getElementById('apv-sku-input');
+  if (skuInp) skuInp.value = '';
+  var skuPat = document.getElementById('apv-sku-pattern');
+  if (skuPat) { skuPat.value = ''; skuPat.style.color = 'var(--text-3)'; }
+  var newSku = document.getElementById('apv-new-sku');
+  if (newSku) newSku.value = '';
+  var newSkuPat = document.getElementById('apv-new-sku-pattern');
+  if (newSkuPat) newSkuPat.value = '';
 
-  var fabType = fabricName === 'Excess' ? 'excess' : fabricName === 'MIF' ? 'mif' : fabricName === 'New Fabric' ? 'new' : 'regular';
-  var fbCls = {excess:'fb-excess',mif:'fb-mif',new:'fb-new',regular:'fb-regular'};
-  var fbLbl = {excess:'Excess',mif:'MIF',new:'New Fabric',regular:'Regular'};
-  var badge = document.getElementById('apv-fabric-badge');
-  badge.innerHTML = fabricName ? '<span class="fab-badge '+fbCls[fabType]+'">'+fbLbl[fabType]+'</span>' : '';
-
-  // Reset editable fields
+  // Reset fields
   document.getElementById('apv-pattern').value = '';
   document.getElementById('apv-proc-remarks').value = _approvalRemark;
   document.getElementById('apv-samp-remarks').value = '';
@@ -2259,7 +2548,102 @@ function openApprovalModal(btn) {
   document.getElementById('acc-tags-row').innerHTML = '<span style="font-size:12px;color:var(--text-3)">No accessories added yet</span>';
   document.getElementById('apv-extra-notes').value = '';
 
+  // Image — show agent's image by default
+  if (d.aimgUrl) {
+    apvSetImage(d.aimgUrl);
+  } else {
+    apvRemoveImg();
+  }
+
   document.getElementById('approval-modal-overlay').classList.remove('hidden');
+}
+
+// ── Approval modal image handlers ──
+function apvSetImage(src) {
+  var img = document.getElementById('apv-img');
+  var ph  = document.getElementById('apv-img-placeholder');
+  img.onload  = function() { img.style.display='block'; ph.style.display='none'; };
+  img.onerror = function() { img.style.display='none'; ph.style.display='flex'; };
+  img.src = src;
+}
+
+function apvClickZone() {
+  document.getElementById('apv-file-input').click();
+}
+
+function apvFileChosen(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) { apvSetImage(ev.target.result); };
+  reader.readAsDataURL(file);
+}
+
+function apvPreviewImg(url) {
+  if (url && url.length > 5) { apvSetImage(url); }
+}
+
+function apvRemoveImg() {
+  var img = document.getElementById('apv-img');
+  var ph  = document.getElementById('apv-img-placeholder');
+  img.onload = null; img.onerror = null;
+  img.src = ''; img.style.display = 'none'; ph.style.display = 'flex';
+}
+
+function apvDragOver(e) {
+  e.preventDefault(); e.stopPropagation();
+  var dz = document.getElementById('apv-dropzone');
+  dz.style.borderColor = '#1D9E75';
+  dz.style.background  = 'var(--mif-bg)';
+}
+
+function apvDragLeave(e) {
+  e.preventDefault();
+  var dz = document.getElementById('apv-dropzone');
+  dz.style.borderColor = ''; dz.style.background = 'var(--surface-3)';
+}
+
+function apvDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  var dz = document.getElementById('apv-dropzone');
+  dz.style.borderColor = ''; dz.style.background = 'var(--surface-3)';
+  var file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    var reader = new FileReader();
+    reader.onload = function(ev) { apvSetImage(ev.target.result); };
+    reader.readAsDataURL(file);
+  } else {
+    var url = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain');
+    if (url && url.startsWith('http')) apvSetImage(url);
+  }
+}
+
+function apvHoverIn() {}
+function apvHoverOut() {}
+function apvChangeImg() { apvClickZone(); }
+
+
+var SKU_PATTERNS = {
+  'TP13307': { label:'TP13307 — Linen Wrap Top · SS26 Core', pattern:'A-line silhouette, wrap front, self-tie belt, flutter sleeves. Pattern ref: PT-TP13307.' },
+  'TP11204': { label:'TP11204 — Summer Breeze Dress · SS26 Resort', pattern:'Shift dress, wide neckline, side seam pockets. Pattern ref: PT-TP11204.' },
+  'BT09912': { label:'BT09912 — Ribbed Knit Trousers · AW26', pattern:'Wide leg, mid-rise, elasticated waistband, no pockets. Pattern ref: PT-BT09912.' },
+  'BT08801': { label:'BT08801 — Pleated Wide Leg Pants · SS26 Resort', pattern:'High-rise, front pleats, wide leg, side pockets. Pattern ref: PT-BT08801.' },
+  'OW14405': { label:'OW14405 — Cotton Bomber Jacket · AW26 Main', pattern:'Bomber silhouette, ribbed cuffs/hem, two side pockets, zip closure. Pattern ref: PT-OW14405.' },
+  'SK10033': { label:'SK10033 — Silk Midi Skirt · SS26 Core', pattern:'Midi length, A-line, invisible zip, no lining. Pattern ref: PT-SK10033.' },
+};
+function onSkuType(val) {
+  var patEl = document.getElementById('apv-sku-pattern');
+  var sku = val.trim().toUpperCase();
+  if (sku && SKU_PATTERNS[sku]) {
+    patEl.value = SKU_PATTERNS[sku].pattern;
+    patEl.style.color = 'var(--text-1)';
+  } else if (sku) {
+    patEl.value = 'Pattern for ' + sku + ' — will be looked up on save';
+    patEl.style.color = 'var(--text-2)';
+  } else {
+    patEl.value = '';
+    patEl.style.color = 'var(--text-3)';
+  }
 }
 
 function addAccessory() {
@@ -2292,11 +2676,52 @@ function confirmApproval() {
   var drawer = _approvalDrawer;
   var remark = document.getElementById('apv-proc-remarks').value.trim();
 
-  row.dataset.aadminRemark = remark;
-  row.dataset.astatus = 'approved';
+  row.dataset.aadminRemark    = remark;
+  row.dataset.astatus         = 'approved';
+  row.dataset.aprodStage      = row.dataset.aprodStage || 'NEW_ENTRY';
+
+  // Save all approval modal fields
+  var getVal = function(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; };
+  row.dataset.afor            = getVal('apv-for');
+  row.dataset.acategoryEdit   = getVal('apv-category-sel')   || row.dataset.acategory  || '';
+  row.dataset.acollectionEdit = getVal('apv-collection-sel') || row.dataset.acollection|| '';
+  row.dataset.apatternType    = getVal('apv-pattern');
+  row.dataset.aprocRemarks    = getVal('apv-proc-remarks');
+  row.dataset.asampRemarks    = getVal('apv-samp-remarks');
+  row.dataset.afabricName     = getVal('apv-fabric-name')    || row.dataset.afabric    || '';
+  row.dataset.acolourEdit     = getVal('apv-colour-name')    || row.dataset.acolourId  || '';
+  row.dataset.afabricUsed     = getVal('apv-fabric-used');
+  row.dataset.aestConsumption = getVal('apv-est-consumption');
+  row.dataset.ainputStage     = getVal('apv-input-stage');
+  row.dataset.aextraNotes     = getVal('apv-extra-notes');
+  // Accessories
+  var accTags = document.querySelectorAll('#acc-tags-row .acc-tag');
+  var accList = [];
+  accTags.forEach(function(t){
+    var txt = t.textContent.replace('×','').trim();
+    if (txt) accList.push(txt);
+  });
+  row.dataset.aaccessories    = accList.join(' | ');
+  // Superimpose SKU
+  row.dataset.askuRef         = getVal('apv-sku-input').toUpperCase();
+  row.dataset.askuPattern     = getVal('apv-sku-pattern');
+  row.dataset.anewSku         = getVal('apv-new-sku');
+  row.dataset.anewSkuPattern  = getVal('apv-new-sku-pattern');
+
+  // Superimpose: auto-advance to GRADING_DONE if SKU entered
+  if (row.dataset.askuRef) row.dataset.aprodStage = 'GRADING_DONE';
+
+  // Carry over edited image (URL or base64 from file)
+  var apvImgEl = document.getElementById('apv-img');
+  if (apvImgEl && apvImgEl.src && apvImgEl.style.display !== 'none') {
+    row.dataset.aimgUrl = apvImgEl.src;
+  }
   adminCounts.approved++;
   adminCounts.pending = Math.max(0, adminCounts.pending - 1);
   updateCounts();
+  // Update status cell in table (index 5)
+  var apvStatusCell = row.cells[5];
+  if (apvStatusCell) apvStatusCell.innerHTML = '<span class="sb s-approved">Approved</span>';
 
   if (drawer) {
     var prev = drawer.previousElementSibling;
@@ -2322,10 +2747,15 @@ function drawerAdminAction(btn, type) {
   setTimeout(function() {
     var newStatus = type === 'approve' ? 'approved' : 'onhold';
     row.dataset.astatus = newStatus;
-    if (type === 'approve') { adminCounts.approved++; adminCounts.pending = Math.max(0, adminCounts.pending-1); }
+    if (type === 'approve') { adminCounts.approved++; adminCounts.pending = Math.max(0, adminCounts.pending-1); row.dataset.aprodStage = row.dataset.aprodStage || 'NEW_ENTRY'; }
     else { adminCounts.hold++; adminCounts.pending = Math.max(0, adminCounts.pending-1); }
     updateCounts();
     row.classList.remove('fade-out');
+    // Update status cell in table (index 5)
+    var statusCell = row.cells[5];
+    if (statusCell) statusCell.innerHTML = newStatus === 'approved'
+      ? '<span class="sb s-approved">Approved</span>'
+      : '<span class="sb s-onhold">On hold</span>';
     drawer.remove();
     row.classList.remove('open-row');
 
@@ -2347,6 +2777,11 @@ function adminAction(btn, type, remark) {
     else { adminCounts.hold++; adminCounts.pending = Math.max(0, adminCounts.pending-1); }
     updateCounts();
     row.classList.remove('fade-out');
+    // Update status cell in table (index 5)
+    var statusCell2 = row.cells[5];
+    if (statusCell2) statusCell2.innerHTML = newStatus === 'approved'
+      ? '<span class="sb s-approved">Approved</span>'
+      : '<span class="sb s-onhold">On hold</span>';
 
     // ── Sync to agent panel ──
     syncToAgentRow(row.dataset.rowKey || row.dataset.aname, newStatus, remark || '', row.dataset.afullName);
@@ -2624,8 +3059,7 @@ function openEditModal(row) {
   editTargetRow = row;
   var d = row.dataset;
 
-  // Fill product name
-  document.getElementById('prod-name').value = d.fullName || '';
+  // Product name removed — timestamp is the identifier
 
   // Fill product URL
   var prodUrlEl = document.getElementById('prod-url');
@@ -2670,7 +3104,7 @@ function openEditModal(row) {
   }
 
   // Show edit banner
-  document.getElementById('edit-banner-title').textContent = 'Editing "' + (d.fullName || 'request') + '"';
+  document.getElementById('edit-banner-title').textContent = 'Editing request — ' + (d.fullName || '');
   var banner = document.getElementById('edit-mode-banner');
   banner.style.display = 'flex';
 
@@ -2679,9 +3113,10 @@ function openEditModal(row) {
   document.getElementById('submit-btn-label').textContent = 'Save changes';
 
   // Scroll form into view
-  document.getElementById('prod-name').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  document.getElementById('prod-name').focus();
-  showToast('Editing "' + (d.fullName || 'request') + '" — make changes and re-submit', 'info');
+  // Scroll to form top
+  var card = document.querySelector('#panel-agent .card');
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showToast('Edit mode — re-submit to update this request', 'info');
 }
 
 function cancelEditMode() {
@@ -2690,7 +3125,7 @@ function cancelEditMode() {
   document.getElementById('submit-btn-icon').className = 'ti ti-send';
   document.getElementById('submit-btn-label').textContent = 'Submit new request';
   // Clear form
-  document.getElementById('prod-name').value = '';
+  var pn = document.getElementById('prod-name'); if (pn) pn.value = '';
   document.getElementById('prod-url').value = '';
   var prodClr = document.getElementById('prod-url-clear');
   if (prodClr) prodClr.style.display = 'none';
